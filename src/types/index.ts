@@ -63,7 +63,22 @@ export interface DashboardStats {
 export interface Usuario {
   id: number;
   nombre: string;
+  apellido?: string;
   correo: string;
-  rol: 'paciente' | 'profesional' | 'cuidador' | 'administrador';
+  rol: 'PACIENTE' | 'MEDICO' | 'RECEPCIONISTA' | 'ADMIN';
   verificado: boolean;
+  especialidad?: string;
+  telefono?: string;
+  numeroLicencia?: string;
+}
+
+export interface Mensaje {
+  id: number;
+  remitenteId: number;
+  destinatarioId: number;
+  contenido: string;
+  fecha: string;
+  leido: boolean;
+  tipo: 'normal' | 'sistema';
+  remitenteNombre?: string;
 }

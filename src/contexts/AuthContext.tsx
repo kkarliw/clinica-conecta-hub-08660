@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useNavigate } from 'react-router-dom';
 import api from '@/lib/api';
 
-type UserRole = 'PACIENTE' | 'MEDICO' | 'ADMIN';
+type UserRole = 'PACIENTE' | 'MEDICO' | 'RECEPCIONISTA' | 'ADMIN';
 
 interface User {
   id: number;
@@ -74,6 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           break;
         case 'MEDICO':
           navigate('/dashboard/medico');
+          break;
+        case 'RECEPCIONISTA':
+          navigate('/dashboard/recepcionista');
           break;
         case 'ADMIN':
           navigate('/dashboard/admin');
@@ -193,6 +196,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         break;
       case 'MEDICO':
         navigate('/dashboard/medico');
+        break;
+      case 'RECEPCIONISTA':
+        navigate('/dashboard/recepcionista');
         break;
       case 'ADMIN':
         navigate('/dashboard/admin');

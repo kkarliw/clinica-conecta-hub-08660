@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import healixLogo from "@/assets/healix-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
-type UserRole = "PACIENTE" | "MEDICO" | "ESPECIALISTA" | "ADMIN" | null;
+type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | null;
 
 interface RoleCard {
   role: UserRole;
@@ -37,9 +37,9 @@ const roleCards: RoleCard[] = [
     color: "from-primary/20 to-primary/5"
   },
   {
-    role: "ESPECIALISTA",
-    title: "Especialista",
-    description: "Atención especializada y consultas avanzadas",
+    role: "RECEPCIONISTA",
+    title: "Recepcionista",
+    description: "Gestiona agendamiento y atención de pacientes",
     icon: Briefcase,
     color: "from-accent/20 to-accent/5"
   },
@@ -65,9 +65,7 @@ export default function Registro() {
     password: "",
     confirmPassword: "",
     // Campos específicos por rol
-    especialidad: "", // Médico
     numeroLicencia: "", // Médico
-    campo: "", // Especialista
     claveAdmin: "" // Admin
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +79,7 @@ export default function Registro() {
       telefono: "",
       password: "",
       confirmPassword: "",
-      especialidad: "",
       numeroLicencia: "",
-      campo: "",
       claveAdmin: ""
     });
   };
@@ -121,10 +117,9 @@ export default function Registro() {
       if (selectedRole === "PACIENTE") {
         registroData.telefono = formData.telefono;
       } else if (selectedRole === "MEDICO") {
-        registroData.especialidad = formData.especialidad;
         registroData.numeroLicencia = formData.numeroLicencia;
-      } else if (selectedRole === "ESPECIALISTA") {
-        registroData.campo = formData.campo;
+        registroData.telefono = formData.telefono;
+      } else if (selectedRole === "RECEPCIONISTA") {
         registroData.telefono = formData.telefono;
       } else if (selectedRole === "ADMIN") {
         registroData.claveAdmin = formData.claveAdmin;
@@ -345,19 +340,19 @@ export default function Registro() {
               {selectedRole === "MEDICO" && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="especialidad">Especialidad</Label>
+                    <Label htmlFor="telefono">Teléfono</Label>
                     <div className="relative">
-                      <Stethoscope className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="especialidad"
-                        type="text"
-                        placeholder="Ej: Cardiología"
+                        id="telefono"
+                        type="tel"
+                        placeholder="+57 300 123 4567"
                         className="pl-10"
-                        value={formData.especialidad}
-                        onChange={(e) => setFormData({ ...formData, especialidad: e.target.value })}
+                        value={formData.telefono}
+                        onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                         required
                         aria-required="true"
-                        aria-label="Especialidad médica"
+                        aria-label="Teléfono"
                       />
                     </div>
                   </div>
@@ -377,47 +372,31 @@ export default function Registro() {
                         aria-label="Número de licencia"
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      Podrás configurar tu especialidad desde tu perfil después del registro
+                    </p>
                   </div>
                 </>
               )}
 
-              {selectedRole === "ESPECIALISTA" && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="campo">Campo de Especialidad</Label>
-                    <div className="relative">
-                      <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="campo"
-                        type="text"
-                        placeholder="Ej: Neurología, Oncología"
-                        className="pl-10"
-                        value={formData.campo}
-                        onChange={(e) => setFormData({ ...formData, campo: e.target.value })}
-                        required
-                        aria-required="true"
-                        aria-label="Campo de especialidad"
-                      />
-                    </div>
+              {selectedRole === "RECEPCIONISTA" && (
+                <div className="space-y-2">
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="telefono"
+                      type="tel"
+                      placeholder="+57 300 123 4567"
+                      className="pl-10"
+                      value={formData.telefono}
+                      onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                      required
+                      aria-required="true"
+                      aria-label="Teléfono"
+                    />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="telefono">Teléfono</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="telefono"
-                        type="tel"
-                        placeholder="+57 300 123 4567"
-                        className="pl-10"
-                        value={formData.telefono}
-                        onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                        required
-                        aria-required="true"
-                        aria-label="Teléfono"
-                      />
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
 
               {selectedRole === "ADMIN" && (

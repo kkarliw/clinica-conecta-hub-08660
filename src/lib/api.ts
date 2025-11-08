@@ -30,6 +30,11 @@ export const createPaciente = async (paciente: Paciente): Promise<Paciente> => {
   return response.data;
 };
 
+export const updatePaciente = async (id: number, paciente: Partial<Paciente>): Promise<Paciente> => {
+  const response = await api.put<Paciente>(`/pacientes/${id}`, paciente);
+  return response.data;
+};
+
 // Profesionales
 export const getProfesionales = async (): Promise<ProfesionalSalud[]> => {
   const response = await api.get<ProfesionalSalud[]>('/profesionales');
@@ -41,6 +46,11 @@ export const createProfesional = async (profesional: ProfesionalSalud): Promise<
   return response.data;
 };
 
+export const updateProfesional = async (id: number, profesional: Partial<ProfesionalSalud>): Promise<ProfesionalSalud> => {
+  const response = await api.put<ProfesionalSalud>(`/profesionales/${id}`, profesional);
+  return response.data;
+};
+
 // Citas
 export const getCitas = async (): Promise<CitaMedica[]> => {
   const response = await api.get<CitaMedica[]>('/citas');
@@ -49,6 +59,11 @@ export const getCitas = async (): Promise<CitaMedica[]> => {
 
 export const getCitasPaciente = async (pacienteId: number): Promise<CitaMedica[]> => {
   const response = await api.get<CitaMedica[]>(`/citas/paciente/${pacienteId}`);
+  return response.data;
+};
+
+export const getCitasMedico = async (medicoId: number): Promise<CitaMedica[]> => {
+  const response = await api.get<CitaMedica[]>(`/citas/medico/${medicoId}`);
   return response.data;
 };
 
@@ -77,6 +92,11 @@ export const getHistoriasClinicas = async (): Promise<any[]> => {
   return response.data;
 };
 
+export const getHistoriasClinicasPaciente = async (pacienteId: number): Promise<any[]> => {
+  const response = await api.get<any[]>(`/historias-clinicas/paciente/${pacienteId}`);
+  return response.data;
+};
+
 export const createHistoriaClinica = async (historia: any): Promise<any> => {
   const response = await api.post<any>('/historial', historia);
   return response.data;
@@ -87,6 +107,17 @@ export const getIncapacidadPDF = async (incapacidadId: number): Promise<Blob> =>
   const response = await api.post(`/incapacidad/pdf`, { incapacidadId }, {
     responseType: 'blob',
   });
+  return response.data;
+};
+
+// Estadísticas
+export const getEstadisticas = async (): Promise<any> => {
+  const response = await api.get('/estadisticas');
+  return response.data;
+};
+
+export const getEstadisticasMedico = async (medicoId: number): Promise<any> => {
+  const response = await api.get(`/estadisticas/medico/${medicoId}`);
   return response.data;
 };
 

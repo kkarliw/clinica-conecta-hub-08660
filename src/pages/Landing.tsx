@@ -403,103 +403,133 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-24">
+      <section className="container mx-auto px-4 py-24 text-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-primary via-primary to-secondary rounded-3xl p-12 md:p-16 text-center text-primary-foreground shadow-2xl relative overflow-hidden"
+          className="max-w-3xl mx-auto"
         >
-          <div className="absolute inset-0 bg-grid-white/10 bg-[size:20px_20px]"></div>
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              ¿Listo para transformar tu práctica médica?
-            </h2>
-            <p className="text-xl md:text-2xl mb-10 opacity-95 max-w-3xl mx-auto">
-              Únete a cientos de profesionales de la salud que ya confían en Healix Pro para ofrecer una mejor experiencia
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/registro">
-                <Button size="lg" variant="secondary" className="text-lg gap-2 px-8 py-6 font-semibold shadow-xl hover:scale-105 transition-transform">
-                  Crear cuenta gratis <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
-                  Ver todas las funciones
-                </Button>
-              </Link>
-            </div>
-            <div className="mt-10 flex items-center justify-center gap-8 text-sm opacity-90 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                <span>Sin tarjeta de crédito</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                <span>Setup en 5 minutos</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <HeartPulse className="w-5 h-5" />
-                <span>Soporte incluido</span>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Transforma la gestión de tu consultorio hoy
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8">
+            Únete a cientos de profesionales que ya confían en Healix Pro para llevar su práctica médica al siguiente nivel
+          </p>
+          <Link to="/registro">
+            <Button size="lg" className="text-lg gap-2 px-10 py-7 shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all">
+              Comenzar gratis ahora <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </motion.div>
       </section>
 
+      {/* Accesibilidad e Inclusión */}
+      <section className="bg-gradient-to-br from-accent/30 via-background to-accent/30 py-16">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full mb-6">
+              <HeartPulse className="w-6 h-6 text-primary" />
+              <span className="font-semibold text-primary">Accesibilidad e Inclusión</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Diseñado para todos
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Healix Pro cumple con los estándares WCAG 2.1 de accesibilidad digital. 
+              Nuestra plataforma está diseñada para ser inclusiva, con alto contraste, 
+              navegación por teclado, texto ampliable y compatibilidad con lectores de pantalla.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <Card className="border-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-semibold mb-2">Contraste Alto</h3>
+                  <p className="text-sm text-muted-foreground">Optimizado para personas con baja visión</p>
+                </CardContent>
+              </Card>
+              <Card className="border-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <HeartPulse className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-semibold mb-2">Navegación Fácil</h3>
+                  <p className="text-sm text-muted-foreground">Teclado, voz y pantallas táctiles</p>
+                </CardContent>
+              </Card>
+              <Card className="border-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-semibold mb-2">Para Todos</h3>
+                  <p className="text-sm text-muted-foreground">Inclusivo sin importar capacidades</p>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t bg-card mt-20">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-8">
-            <div className="md:col-span-2">
+      <footer className="bg-card border-t py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
               <div className="flex items-center gap-3 mb-4">
                 <img src={healixLogo} alt="Healix Pro" className="h-10 w-10" />
-                <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  Healix Pro
-                </span>
+                <span className="text-xl font-bold">Healix Pro</span>
               </div>
-              <p className="text-muted-foreground mb-4 max-w-md">
-                Plataforma integral de gestión médica diseñada para modernizar consultorios, 
-                clínicas y centros de salud con tecnología de vanguardia.
+              <p className="text-sm text-muted-foreground">
+                Gestión médica inteligente y humana. Simplificamos la atención en consultorios.
               </p>
-              <div className="flex gap-2">
-                <Link to="/registro">
-                  <Button size="sm" variant="default">Comenzar ahora</Button>
-                </Link>
-              </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Plataforma</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><Link to="/login" className="hover:text-primary transition-colors">Iniciar sesión</Link></li>
+              <h4 className="font-semibold mb-4">Producto</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/registro" className="hover:text-primary transition-colors">Registrarse</Link></li>
-                <li><a href="#features" className="hover:text-primary transition-colors">Funcionalidades</a></li>
-                <li><a href="#pricing" className="hover:text-primary transition-colors">Precios</a></li>
+                <li><Link to="/login" className="hover:text-primary transition-colors">Iniciar sesión</Link></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Características</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Precios</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Soporte</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
+              <h4 className="font-semibold mb-4">Soporte</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-primary transition-colors">Centro de ayuda</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors">Documentación</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Política de privacidad</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Términos y condiciones</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Contacto</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Estado del servicio</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-primary transition-colors">Privacidad</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Términos de uso</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Accesibilidad</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">HIPAA Compliance</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              © 2025 Healix Pro. Todos los derechos reservados.
+          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
+            <p className="mb-2">
+              © 2024 Healix Pro. Todos los derechos reservados.
             </p>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Twitter</a>
-              <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
-              <a href="#" className="hover:text-primary transition-colors">Facebook</a>
-            </div>
+            <p className="text-xs">
+              <strong>Diseñado para todos.</strong> Healix Pro cumple con los estándares de accesibilidad digital e inclusión WCAG 2.1.
+            </p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
+

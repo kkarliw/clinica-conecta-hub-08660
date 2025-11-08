@@ -9,6 +9,7 @@ import Layout from "@/components/Layout";
 import DoctorLayout from "@/components/layouts/DoctorLayout";
 import PatientLayout from "@/components/layouts/PatientLayout";
 import CaregiverLayout from "@/components/layouts/CaregiverLayout";
+import RecepcionistaLayout from "@/components/layouts/RecepcionistaLayout";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Registro from "@/pages/Registro";
@@ -36,6 +37,10 @@ import PatientProfile from "@/pages/patient/PatientProfile";
 import CaregiverDashboard from "@/pages/caregiver/CaregiverDashboard";
 import CaregiverPatients from "@/pages/caregiver/CaregiverPatients";
 import CaregiverProfile from "@/pages/caregiver/CaregiverProfile";
+import RecepcionistaDashboard from "@/pages/recepcionista/RecepcionistaDashboard";
+import RecepcionistaCitas from "@/pages/recepcionista/RecepcionistaCitas";
+import RecepcionistaPacientes from "@/pages/recepcionista/RecepcionistaPacientes";
+import RecepcionistaProfile from "@/pages/recepcionista/RecepcionistaProfile";
 import DashboardPaciente from "@/pages/dashboard/DashboardPaciente";
 import DashboardMedico from "@/pages/dashboard/DashboardMedico";
 import DashboardAdmin from "@/pages/dashboard/DashboardAdmin";
@@ -79,6 +84,28 @@ const App = () => (
             <Route path="/dashboard/admin" element={
               <RequireRole role="ADMIN">
                 <DashboardAdmin />
+              </RequireRole>
+            } />
+            <Route path="/dashboard/recepcionista" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><RecepcionistaDashboard /></RecepcionistaLayout>
+              </RequireRole>
+            } />
+
+            {/* Recepcionista Routes */}
+            <Route path="/recepcionista/citas" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><RecepcionistaCitas /></RecepcionistaLayout>
+              </RequireRole>
+            } />
+            <Route path="/recepcionista/pacientes" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><RecepcionistaPacientes /></RecepcionistaLayout>
+              </RequireRole>
+            } />
+            <Route path="/recepcionista/perfil" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><RecepcionistaProfile /></RecepcionistaLayout>
               </RequireRole>
             } />
 
