@@ -36,6 +36,9 @@ import PatientHealth from "@/pages/patient/PatientHealth";
 import PatientProfile from "@/pages/patient/PatientProfile";
 import CuidadorDashboard from "@/pages/cuidador/CuidadorDashboard";
 import CuidadorPatients from "@/pages/cuidador/CuidadorPacientes";
+import CuidadorCitas from "@/pages/cuidador/CuidadorCitas";
+import CuidadorReportes from "@/pages/cuidador/CuidadorReportes";
+import CuidadorNotificaciones from "@/pages/cuidador/CuidadorNotificaciones";
 import CaregiverProfile from "@/pages/caregiver/CaregiverProfile";
 import RecepcionistaDashboard from "@/pages/recepcionista/RecepcionistaDashboard";
 import RecepcionistaCitas from "@/pages/recepcionista/RecepcionistaCitas";
@@ -211,6 +214,11 @@ const App = () => (
             } />
 
             {/* Caregiver Routes */}
+            <Route path="/dashboard/cuidador" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorDashboard /></CaregiverLayout>
+              </RequireRole>
+            } />
             <Route path="/cuidador/dashboard" element={
               <RequireRole role="CUIDADOR">
                 <CaregiverLayout><CuidadorDashboard /></CaregiverLayout>
@@ -219,6 +227,21 @@ const App = () => (
             <Route path="/cuidador/pacientes" element={
               <RequireRole role="CUIDADOR">
                 <CaregiverLayout><CuidadorPatients /></CaregiverLayout>
+              </RequireRole>
+            } />
+            <Route path="/cuidador/citas" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorCitas /></CaregiverLayout>
+              </RequireRole>
+            } />
+            <Route path="/cuidador/reportes" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorReportes /></CaregiverLayout>
+              </RequireRole>
+            } />
+            <Route path="/cuidador/notificaciones" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorNotificaciones /></CaregiverLayout>
               </RequireRole>
             } />
             <Route path="/cuidador/perfil" element={

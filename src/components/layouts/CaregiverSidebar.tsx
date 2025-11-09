@@ -7,6 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 const menuItems = [
   { title: "Dashboard", icon: Home, href: "/cuidador/dashboard" },
   { title: "Mis Pacientes", icon: Users, href: "/cuidador/pacientes" },
+  { title: "Citas", icon: Calendar, href: "/cuidador/citas" },
+  { title: "Reportes", icon: FileText, href: "/cuidador/reportes" },
+  { title: "Notificaciones", icon: Bell, href: "/cuidador/notificaciones" },
   { title: "Perfil", icon: Settings, href: "/cuidador/perfil" },
 ];
 

@@ -1,25 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Users, FileText, Clock, Activity, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, Users, FileText, Clock, Activity, TrendingUp, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getCitas, getPacientes, getHistoriasClinicas } from "@/lib/api";
+import { getCitasMedico, getPacientes, getHistoriasClinicas, getEstadisticasMedico } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import type { CitaMedica } from "@/types";
 import { useState } from "react";
 import HistoriaClinicaForm from "@/components/historias/HistoriaClinicaForm";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isHistoriaOpen, setIsHistoriaOpen] = useState(false);
 
-  const { data: allCitas = [] } = useQuery({
-    queryKey: ["citas", "doctor"],
-    queryFn: getCitas,
+  const { data: citas = [] } = useQuery({
+    queryKey: ["citas", "medico", user?.id],
+    queryFn: () => getCitasMedico(user?.id || 0),
+    enabled: !!user?.id,
   });
 
-  const citas = allCitas.filter((cita: CitaMedica) => cita.profesionalId === user?.id);
+  const { data: estadisticas } = useQuery({
+    queryKey: ["estadisticas", "medico", user?.id],
+    queryFn: () => getEstadisticasMedico(user?.id || 0),
+    enabled: !!user?.id,
+  });
 
   const { data: pacientes = [] } = useQuery({
     queryKey: ["pacientes"],
@@ -33,8 +40,11 @@ export default function DoctorDashboard() {
 
   const citasHoy = citas.filter((cita: CitaMedica) => {
     const today = new Date().toISOString().split('T')[0];
-    return cita.fecha.split('T')[0] === today && cita.estado === 'confirmada';
+    return cita.fecha.split('T')[0] === today;
   });
+
+  const citasPendientes = citas.filter((c: CitaMedica) => c.estado === 'pendiente');
+  const citasCompletadas = citas.filter((c: CitaMedica) => c.estado === 'completada');
 
   const stats = [
     {
@@ -43,6 +53,15 @@ export default function DoctorDashboard() {
       icon: Calendar,
       color: "text-primary",
       bgColor: "bg-primary/10",
+      description: `${citasHoy.filter((c: CitaMedica) => c.estado === 'confirmada').length} confirmadas`,
+    },
+    {
+      title: "Citas Pendientes",
+      value: citasPendientes.length,
+      icon: Clock,
+      color: "text-amber-500",
+      bgColor: "bg-amber-500/10",
+      description: "Por confirmar",
     },
     {
       title: "Pacientes Activos",
@@ -50,6 +69,7 @@ export default function DoctorDashboard() {
       icon: Users,
       color: "text-secondary",
       bgColor: "bg-secondary/10",
+      description: "Bajo tu atención",
     },
     {
       title: "Historias Clínicas",
@@ -57,6 +77,7 @@ export default function DoctorDashboard() {
       icon: FileText,
       color: "text-accent-foreground",
       bgColor: "bg-accent",
+      description: "Total registradas",
     },
   ];
 
@@ -80,7 +101,7 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -99,11 +120,39 @@ export default function DoctorDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
+
+      {citasPendientes.length > 0 && (
+        <Card className="border-l-4 border-l-amber-500">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-amber-600">
+              <AlertCircle className="w-5 h-5" />
+              Alertas - Citas Pendientes ({citasPendientes.length})
+            </CardTitle>
+            <CardDescription>Requieren confirmación</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {citasPendientes.slice(0, 3).map((cita: CitaMedica) => (
+                <div key={cita.id} className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">{cita.pacienteNombre}</p>
+                    <p className="text-sm text-muted-foreground">{new Date(cita.fecha).toLocaleString('es-CO')}</p>
+                  </div>
+                  <Button size="sm" onClick={() => navigate(`/doctor/agenda`)}>
+                    Revisar
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -113,8 +162,8 @@ export default function DoctorDashboard() {
                 <Clock className="w-5 h-5 text-primary" />
                 Agenda del Día
               </CardTitle>
-              <Button size="sm" onClick={() => setIsHistoriaOpen(true)}>
-                Nueva Historia
+              <Button size="sm" onClick={() => navigate("/doctor/agenda")}>
+                Ver Agenda
               </Button>
             </div>
           </CardHeader>
@@ -122,17 +171,22 @@ export default function DoctorDashboard() {
             {citasHoy.length > 0 ? (
               <div className="space-y-3">
                 {citasHoy.slice(0, 5).map((cita: CitaMedica) => (
-                  <div key={cita.id} className="p-3 bg-muted/50 rounded-lg flex items-center justify-between">
+                  <div key={cita.id} className="p-3 bg-muted/50 rounded-lg flex items-center justify-between hover:bg-muted transition-colors">
                     <div>
                       <p className="font-medium text-foreground">{cita.pacienteNombre}</p>
                       <p className="text-sm text-muted-foreground">{cita.motivo}</p>
                     </div>
-                    <Badge variant="outline">
-                      {new Date(cita.fecha).toLocaleTimeString('es-CO', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={cita.estado === 'confirmada' ? 'default' : 'secondary'}>
+                        {cita.estado}
+                      </Badge>
+                      <Badge variant="outline">
+                        {new Date(cita.fecha).toLocaleTimeString('es-CO', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </Badge>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -153,18 +207,24 @@ export default function DoctorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
                 <span className="text-sm text-muted-foreground">Consultas Realizadas</span>
-                <span className="text-lg font-bold text-foreground">{historias.length}</span>
+                <span className="text-lg font-bold text-foreground">{citasCompletadas.length}</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-3 bg-secondary/5 rounded-lg">
                 <span className="text-sm text-muted-foreground">Citas Programadas</span>
                 <span className="text-lg font-bold text-foreground">{citas.length}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Pacientes Únicos</span>
-                <span className="text-lg font-bold text-foreground">{pacientes.length}</span>
+              <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                <span className="text-sm text-muted-foreground">Tasa de Asistencia</span>
+                <span className="text-lg font-bold text-foreground">
+                  {citas.length > 0 ? Math.round((citasCompletadas.length / citas.length) * 100) : 0}%
+                </span>
               </div>
+              <Button className="w-full" variant="outline" onClick={() => navigate("/doctor/patients")}>
+                <Users className="w-4 h-4 mr-2" />
+                Ver Todos los Pacientes
+              </Button>
             </div>
           </CardContent>
         </Card>
