@@ -1,19 +1,24 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Calendar, Users, Clock, Bell, CheckCircle, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { getCitas, getPacientes } from "@/lib/api";
+import { getCitasHoy, getPacientes } from "@/lib/api";
+import { registrarLlegadaPaciente } from "@/services/recepcionista.service";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RecepcionistaDashboard() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const { data: citas = [] } = useQuery({
-    queryKey: ["citas"],
-    queryFn: getCitas,
+  const { data: citasHoy = [], isLoading: loadingCitas } = useQuery({
+    queryKey: ["citas-hoy"],
+    queryFn: getCitasHoy,
+    refetchInterval: 30000, // Refrescar cada 30 segundos
   });
 
   const { data: pacientes = [] } = useQuery({
@@ -21,18 +26,41 @@ export default function RecepcionistaDashboard() {
     queryFn: getPacientes,
   });
 
-  // Filtrar citas del día
-  const citasHoy = citas.filter(cita => 
-    cita.fecha.startsWith(selectedDate)
-  );
-
   const citasPendientes = citasHoy.filter(c => c.estado === 'pendiente');
   const citasConfirmadas = citasHoy.filter(c => c.estado === 'confirmada');
   const citasCompletadas = citasHoy.filter(c => c.estado === 'completada');
 
-  const handleMarcarLlegada = (citaId: number, pacienteNombre: string) => {
-    toast.success(`Paciente ${pacienteNombre} registrado`, {
-      description: "Se ha notificado al médico"
+  const marcarLlegadaMutation = useMutation({
+    mutationFn: ({ citaId, medicoId, pacienteNombre }: { 
+      citaId: number; 
+      medicoId: number; 
+      pacienteNombre: string;
+    }) => registrarLlegadaPaciente(citaId, medicoId, pacienteNombre),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["citas-hoy"] });
+      toast.success(`Paciente ${variables.pacienteNombre} registrado`, {
+        description: "Se ha notificado al médico"
+      });
+    },
+    onError: (error: any) => {
+      toast.error("Error al marcar llegada", {
+        description: error.response?.data?.message || "Intenta de nuevo"
+      });
+    }
+  });
+
+  const handleMarcarLlegada = (cita: any) => {
+    if (!cita.profesionalId) {
+      toast.error("No se puede notificar", {
+        description: "La cita no tiene médico asignado"
+      });
+      return;
+    }
+
+    marcarLlegadaMutation.mutate({
+      citaId: cita.id,
+      medicoId: cita.profesionalId,
+      pacienteNombre: cita.pacienteNombre || 'Paciente'
     });
   };
 
@@ -163,11 +191,12 @@ export default function RecepcionistaDashboard() {
                     {cita.estado !== 'completada' && (
                       <Button
                         size="sm"
-                        onClick={() => handleMarcarLlegada(cita.id!, cita.pacienteNombre!)}
+                        onClick={() => handleMarcarLlegada(cita)}
                         className="gap-2"
+                        disabled={marcarLlegadaMutation.isPending}
                       >
                         <Bell className="h-4 w-4" />
-                        Marcar llegada
+                        {marcarLlegadaMutation.isPending ? 'Marcando...' : 'Marcar llegada'}
                       </Button>
                     )}
                   </div>

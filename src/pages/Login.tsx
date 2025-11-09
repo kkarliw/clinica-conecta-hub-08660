@@ -102,7 +102,7 @@ export default function Login() {
             {/* Modo Desarrollo */}
             <div className="mt-6 p-4 border border-dashed border-primary/30 rounded-lg bg-primary/5">
               <p className="text-sm font-medium text-center mb-3">🔧 Modo Desarrollo - Acceso Rápido</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -122,6 +122,16 @@ export default function Login() {
                   }}
                 >
                   Médico
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    toast.success("Accediendo como Recepcionista");
+                    devLogin('RECEPCIONISTA');
+                  }}
+                >
+                  Recepcionista
                 </Button>
                 <Button 
                   variant="outline" 

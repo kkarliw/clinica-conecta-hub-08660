@@ -1,24 +1,43 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, UserPlus } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { getPacientes } from "@/lib/api";
+import { buscarPacienteRapido } from "@/services/recepcionista.service";
 import PacienteTable from "@/components/pacientes/PacienteTable";
 import { motion } from "framer-motion";
+import type { Paciente } from "@/types";
 
 export default function RecepcionistaPacientes() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPacientes, setFilteredPacientes] = useState<Paciente[]>([]);
 
   const { data: pacientes = [], isLoading } = useQuery({
     queryKey: ["pacientes"],
     queryFn: getPacientes,
   });
 
-  const filteredPacientes = pacientes.filter(p =>
-    p.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.documento?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Búsqueda en tiempo real
+  const handleSearch = async (term: string) => {
+    setSearchTerm(term);
+    
+    if (term.trim() === "") {
+      setFilteredPacientes(pacientes);
+      return;
+    }
+
+    // Búsqueda local primero (rápida)
+    const localResults = pacientes.filter(p =>
+      p.nombre?.toLowerCase().includes(term.toLowerCase()) ||
+      p.documento?.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFilteredPacientes(localResults);
+
+    // TODO: Cuando exista el endpoint de búsqueda en backend, usarlo
+    // const resultados = await buscarPacienteRapido(term);
+    // setFilteredPacientes(resultados);
+  };
 
   return (
     <div className="space-y-6">
@@ -38,7 +57,7 @@ export default function RecepcionistaPacientes() {
             placeholder="Buscar por nombre o documento..."
             className="pl-10"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
       </div>
@@ -52,7 +71,7 @@ export default function RecepcionistaPacientes() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <PacienteTable pacientes={filteredPacientes} />
+          <PacienteTable pacientes={searchTerm ? filteredPacientes : pacientes} />
         </motion.div>
       )}
     </div>

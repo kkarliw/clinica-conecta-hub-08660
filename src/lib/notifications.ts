@@ -1,5 +1,14 @@
 import api from './api';
 
+// ============================================
+// NOTIFICACIONES - Conectado a Backend Java
+// ============================================
+// Endpoints disponibles:
+// GET    /api/notificaciones/:usuarioId
+// POST   /api/notificaciones
+// PUT    /api/notificaciones/:id/leer
+// ============================================
+
 export interface NotificacionInterna {
   id?: number;
   titulo: string;
@@ -17,8 +26,24 @@ export const getNotificaciones = async (usuarioId: number): Promise<Notificacion
   return response.data;
 };
 
+// ⚠️ FALTANTE EN BACKEND - Filtrar solo no leídas
+export const getNotificacionesNoLeidas = async (usuarioId: number): Promise<NotificacionInterna[]> => {
+  // TEMPORAL: Filtrar en frontend
+  const notificaciones = await getNotificaciones(usuarioId);
+  return notificaciones.filter(n => !n.leida);
+  // TODO: Implementar en backend: GET /api/notificaciones/:usuarioId/no-leidas
+};
+
 export const enviarNotificacion = async (notificacion: Omit<NotificacionInterna, 'id' | 'fecha'>): Promise<NotificacionInterna> => {
-  const response = await api.post<NotificacionInterna>('/notificaciones', notificacion);
+  const response = await api.post<NotificacionInterna>('/notificaciones', {
+    titulo: notificacion.titulo,
+    mensaje: notificacion.mensaje,
+    remitente: notificacion.remitenteId,
+    destinatario: notificacion.destinatarioId,
+    tipo: notificacion.tipo.toUpperCase(), // Backend usa MAYÚSCULAS
+    leida: notificacion.leida,
+    cita: notificacion.citaId
+  });
   return response.data;
 };
 
