@@ -27,15 +27,15 @@ export default function RequireRole({ children, role }: RequireRoleProps) {
     // Redirigir al dashboard correspondiente según el rol del usuario
     switch (user.rol) {
       case 'PACIENTE':
-        return <Navigate to="/paciente/dashboard" replace />;
+        return <Navigate to="/dashboard/paciente" replace />;
       case 'MEDICO':
-        return <Navigate to="/medico/dashboard" replace />;
+        return <Navigate to="/dashboard/medico" replace />;
       case 'RECEPCIONISTA':
-        return <Navigate to="/recepcion/dashboard" replace />;
+        return <Navigate to="/dashboard/recepcionista" replace />;
       case 'CUIDADOR':
         return <Navigate to="/cuidador/dashboard" replace />;
       case 'ADMIN':
-        return <Navigate to="/admin/dashboard" replace />;
+        return <Navigate to="/dashboard/admin" replace />;
       default:
         return <Navigate to="/login" replace />;
     }
