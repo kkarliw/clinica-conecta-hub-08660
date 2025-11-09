@@ -9,10 +9,10 @@ export default function RecepcionistaSidebar() {
   const { logout, user } = useAuth();
 
   const menuItems = [
-    { icon: Home, label: "Panel Principal", path: "/dashboard/recepcionista" },
-    { icon: Calendar, label: "Citas", path: "/recepcionista/citas" },
-    { icon: Users, label: "Pacientes", path: "/recepcionista/pacientes" },
-    { icon: Settings, label: "Configuración", path: "/recepcionista/perfil" },
+    { icon: Home, label: "Panel Principal", path: "/recepcion/dashboard" },
+    { icon: Calendar, label: "Citas", path: "/recepcion/citas" },
+    { icon: Users, label: "Pacientes", path: "/recepcion/pacientes" },
+    { icon: Settings, label: "Configuración", path: "/recepcion/perfil" },
   ];
 
   return (

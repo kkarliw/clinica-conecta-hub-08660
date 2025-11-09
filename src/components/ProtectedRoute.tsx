@@ -27,15 +27,15 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     // Redirigir al dashboard correspondiente según el rol
     switch (user.rol) {
       case 'PACIENTE':
-        return <Navigate to="/dashboard/paciente" replace />;
+        return <Navigate to="/paciente/dashboard" replace />;
       case 'MEDICO':
-        return <Navigate to="/dashboard/medico" replace />;
+        return <Navigate to="/medico/dashboard" replace />;
       case 'RECEPCIONISTA':
-        return <Navigate to="/dashboard/recepcionista" replace />;
+        return <Navigate to="/recepcion/dashboard" replace />;
       case 'CUIDADOR':
         return <Navigate to="/cuidador/dashboard" replace />;
       case 'ADMIN':
-        return <Navigate to="/dashboard/admin" replace />;
+        return <Navigate to="/admin/dashboard" replace />;
       default:
         return <Navigate to="/login" replace />;
     }
