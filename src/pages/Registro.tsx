@@ -104,26 +104,13 @@ export default function Registro() {
     setIsLoading(true);
 
     try {
-      // Preparar datos según el rol
-      const registroData: any = {
+      // Backend Java Spark solo requiere: nombre, email, password, rol
+      const registroData = {
         nombre: formData.nombre,
-        apellido: formData.apellido,
         correo: formData.correo,
         password: formData.password,
         rol: selectedRole
       };
-
-      // Agregar campos específicos según el rol
-      if (selectedRole === "PACIENTE") {
-        registroData.telefono = formData.telefono;
-      } else if (selectedRole === "MEDICO") {
-        registroData.numeroLicencia = formData.numeroLicencia;
-        registroData.telefono = formData.telefono;
-      } else if (selectedRole === "RECEPCIONISTA") {
-        registroData.telefono = formData.telefono;
-      } else if (selectedRole === "ADMIN") {
-        registroData.claveAdmin = formData.claveAdmin;
-      }
 
       await register(registroData);
       

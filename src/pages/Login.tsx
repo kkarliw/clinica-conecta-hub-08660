@@ -99,16 +99,19 @@ export default function Login() {
               </Button>
             </form>
 
-            {/* Modo Desarrollo */}
+            {/* Login de Prueba */}
             <div className="mt-6 p-4 border border-dashed border-primary/30 rounded-lg bg-primary/5">
-              <p className="text-sm font-medium text-center mb-3">🔧 Modo Desarrollo - Acceso Rápido</p>
+              <p className="text-sm font-medium text-center mb-3">🔧 Login de Prueba</p>
               <div className="grid grid-cols-2 gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    toast.success("Accediendo como Paciente");
-                    devLogin('PACIENTE');
+                    setFormData({ 
+                      correo: "paciente@hospital.com", 
+                      password: "paciente123" 
+                    });
+                    toast.info("Credenciales de prueba cargadas");
                   }}
                 >
                   Paciente
@@ -117,8 +120,11 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    toast.success("Accediendo como Médico");
-                    devLogin('MEDICO');
+                    setFormData({ 
+                      correo: "medico@hospital.com", 
+                      password: "medico123" 
+                    });
+                    toast.info("Credenciales de prueba cargadas");
                   }}
                 >
                   Médico
@@ -127,8 +133,11 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    toast.success("Accediendo como Recepcionista");
-                    devLogin('RECEPCIONISTA');
+                    setFormData({ 
+                      correo: "recepcionista@hospital.com", 
+                      password: "recepcionista123" 
+                    });
+                    toast.info("Credenciales de prueba cargadas");
                   }}
                 >
                   Recepcionista
@@ -137,8 +146,11 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    toast.success("Accediendo como Cuidador");
-                    devLogin('CUIDADOR');
+                    setFormData({ 
+                      correo: "cuidador@hospital.com", 
+                      password: "cuidador123" 
+                    });
+                    toast.info("Credenciales de prueba cargadas");
                   }}
                 >
                   Cuidador
@@ -147,8 +159,11 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    toast.success("Accediendo como Admin");
-                    devLogin('ADMIN');
+                    setFormData({ 
+                      correo: "admin@hospital.com", 
+                      password: "admin123" 
+                    });
+                    toast.info("Credenciales de prueba cargadas");
                   }}
                   className="col-span-2"
                 >

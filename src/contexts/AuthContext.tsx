@@ -47,15 +47,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (correo: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { email: correo, password });
-      // El backend devuelve { token, rol, nombre, id } directamente
-      const { token: newToken, rol, nombre, id } = response.data;
+      // Backend Java Spark espera { email, password }
+      const response = await api.post('/auth/login', { 
+        email: correo, 
+        password 
+      });
+      
+      // Backend devuelve { token, id, nombre, email, rol }
+      const { token: newToken, id, nombre, email, rol } = response.data;
       
       // Construir objeto user compatible con el frontend
       const newUser: User = {
-        id: id || 0,
+        id,
         nombre,
-        correo,
+        correo: email,
         rol: rol as UserRole,
         verificado: true
       };
@@ -68,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
+      // Redirigir según el rol
       switch (rol as UserRole) {
         case 'PACIENTE':
           navigate('/paciente/dashboard');
@@ -90,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('Error en login:', error);
       
-      // Manejo de errores específicos con mensajes personalizados
       if (error.response) {
         const status = error.response.status;
         const serverMessage = error.response.data?.message || error.response.data?.error;
@@ -117,30 +122,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (data: any) => {
     try {
-      // Mapear los campos del frontend al formato del backend
+      // Backend Java Spark espera { nombre, email, password, rol }
       const payload = {
         nombre: data.nombre,
-        apellido: data.apellido,
-        email: data.correo, // Mapear correo -> email
+        email: data.correo,
         password: data.password,
-        telefono: data.telefono,
-        rol: data.rol,
-        // Campos específicos por rol
-        especialidad: data.especialidad,
-        numeroLicencia: data.numeroLicencia,
-        campo: data.campo,
-        claveAdmin: data.claveAdmin
+        rol: data.rol
       };
 
       const response = await api.post('/auth/register', payload);
       
-      // El backend puede devolver diferentes respuestas
-      // Adaptarse según la implementación del backend
       return response.data;
     } catch (error: any) {
       console.error('Error en registro:', error);
       
-      // Manejo de errores específicos con mensajes personalizados
       if (error.response) {
         const status = error.response.status;
         const serverMessage = error.response.data?.message || error.response.data?.error;
