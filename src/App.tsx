@@ -34,8 +34,8 @@ import NewAppointment from "@/pages/patient/NewAppointment";
 import PatientHistory from "@/pages/patient/PatientHistory";
 import PatientHealth from "@/pages/patient/PatientHealth";
 import PatientProfile from "@/pages/patient/PatientProfile";
-import CaregiverDashboard from "@/pages/caregiver/CaregiverDashboard";
-import CaregiverPatients from "@/pages/caregiver/CaregiverPatients";
+import CuidadorDashboard from "@/pages/cuidador/CuidadorDashboard";
+import CuidadorPatients from "@/pages/cuidador/CuidadorPacientes";
 import CaregiverProfile from "@/pages/caregiver/CaregiverProfile";
 import RecepcionistaDashboard from "@/pages/recepcionista/RecepcionistaDashboard";
 import RecepcionistaCitas from "@/pages/recepcionista/RecepcionistaCitas";
@@ -207,6 +207,23 @@ const App = () => (
             <Route path="/patient/profile" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientProfile /></PatientLayout>
+              </RequireRole>
+            } />
+
+            {/* Caregiver Routes */}
+            <Route path="/cuidador/dashboard" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorDashboard /></CaregiverLayout>
+              </RequireRole>
+            } />
+            <Route path="/cuidador/pacientes" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CuidadorPatients /></CaregiverLayout>
+              </RequireRole>
+            } />
+            <Route path="/cuidador/perfil" element={
+              <RequireRole role="CUIDADOR">
+                <CaregiverLayout><CaregiverProfile /></CaregiverLayout>
               </RequireRole>
             } />
             

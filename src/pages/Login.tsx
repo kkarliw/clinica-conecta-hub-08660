@@ -137,9 +137,20 @@ export default function Login() {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
+                    toast.success("Accediendo como Cuidador");
+                    devLogin('CUIDADOR');
+                  }}
+                >
+                  Cuidador
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
                     toast.success("Accediendo como Admin");
                     devLogin('ADMIN');
                   }}
+                  className="col-span-2"
                 >
                   Admin
                 </Button>
