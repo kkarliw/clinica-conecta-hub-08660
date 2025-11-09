@@ -70,19 +70,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       switch (rol as UserRole) {
         case 'PACIENTE':
-          navigate('/dashboard/paciente');
+          navigate('/paciente/dashboard');
           break;
         case 'MEDICO':
-          navigate('/dashboard/medico');
+          navigate('/medico/dashboard');
           break;
         case 'RECEPCIONISTA':
-          navigate('/dashboard/recepcionista');
+          navigate('/recepcion/dashboard');
           break;
         case 'CUIDADOR':
           navigate('/cuidador/dashboard');
           break;
         case 'ADMIN':
-          navigate('/dashboard/admin');
+          navigate('/admin/dashboard');
           break;
         default:
           navigate('/');
@@ -195,19 +195,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Redirigir según el rol
     switch (rol) {
       case 'PACIENTE':
-        navigate('/dashboard/paciente');
+        navigate('/paciente/dashboard');
         break;
       case 'MEDICO':
-        navigate('/dashboard/medico');
+        navigate('/medico/dashboard');
         break;
       case 'RECEPCIONISTA':
-        navigate('/dashboard/recepcionista');
+        navigate('/recepcion/dashboard');
         break;
       case 'CUIDADOR':
         navigate('/cuidador/dashboard');
         break;
       case 'ADMIN':
-        navigate('/dashboard/admin');
+        navigate('/admin/dashboard');
         break;
     }
   };
