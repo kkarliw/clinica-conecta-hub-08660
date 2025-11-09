@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { CaregiverSidebar } from "./CaregiverSidebar";
+import CaregiverSidebar from "./CaregiverSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
