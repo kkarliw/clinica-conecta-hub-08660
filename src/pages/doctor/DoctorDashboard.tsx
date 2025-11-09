@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Users, FileText, Clock, Activity, TrendingUp, AlertCircle } from "lucide-react";
+import { Calendar, Users, FileText, Clock, Activity, TrendingUp, AlertCircle, Building2, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getCitasMedico, getPacientes, getHistoriasClinicas, getEstadisticasMedico } from "@/lib/api";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getCitasMedico, getPacientes, getHistoriasClinicas, getEstadisticasMedico, getProfesionales } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import type { CitaMedica } from "@/types";
@@ -37,6 +38,13 @@ export default function DoctorDashboard() {
     queryKey: ["historias"],
     queryFn: getHistoriasClinicas,
   });
+
+  const { data: profesionales = [] } = useQuery({
+    queryKey: ["profesionales"],
+    queryFn: getProfesionales,
+  });
+
+  const medicoData = profesionales.find((p) => p.correo === user?.correo);
 
   const citasHoy = citas.filter((cita: CitaMedica) => {
     const today = new Date().toISOString().split('T')[0];
@@ -95,9 +103,21 @@ export default function DoctorDashboard() {
             })}
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10">
-          <Activity className="w-5 h-5 text-primary animate-pulse" />
-          <span className="text-sm font-medium text-primary">En Línea</span>
+        <div className="flex items-center gap-3">
+          {medicoData?.consultorioNumero && (
+            <Alert className="py-2 px-4">
+              <Building2 className="h-4 w-4" />
+              <AlertTitle className="text-sm font-semibold mb-0">Consultorio {medicoData.consultorioNumero}</AlertTitle>
+              <AlertDescription className="text-xs flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {medicoData.consultorioUbicacion}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10">
+            <Activity className="w-5 h-5 text-primary animate-pulse" />
+            <span className="text-sm font-medium text-primary">En Línea</span>
+          </div>
         </div>
       </div>
 

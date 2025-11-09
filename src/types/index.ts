@@ -15,6 +15,9 @@ export interface ProfesionalSalud {
   especialidad: string;
   correo: string;
   telefono: string;
+  consultorioId?: number;
+  consultorioNumero?: string;
+  consultorioUbicacion?: string;
 }
 
 export interface CitaMedica {
@@ -27,6 +30,9 @@ export interface CitaMedica {
   pacienteNombre?: string;
   profesionalNombre?: string;
   notas?: string;
+  consultorioId?: number;
+  consultorioNumero?: string;
+  consultorioUbicacion?: string;
 }
 
 export interface HistoriaClinica {
@@ -151,4 +157,10 @@ export interface Mensaje {
   leido: boolean;
   tipo: 'normal' | 'sistema';
   remitenteNombre?: string;
+}
+
+export interface Consultorio {
+  id?: number;
+  numeroSala: string;
+  ubicacion: string;
 }

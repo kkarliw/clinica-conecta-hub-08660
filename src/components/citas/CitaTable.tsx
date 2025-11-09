@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { CitaMedica, Paciente, ProfesionalSalud } from "@/types";
-import { Calendar, User, Stethoscope, FileText } from "lucide-react";
+import { Calendar, User, Stethoscope, FileText, Building2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -19,6 +19,11 @@ export default function CitaTable({ citas, pacientes, profesionales }: CitaTable
 
   const getProfesionalNombre = (id: number) => {
     return profesionales.find((p) => p.id === id)?.nombre || "Desconocido";
+  };
+
+  const getConsultorioInfo = (profesionalId: number) => {
+    const profesional = profesionales.find((p) => p.id === profesionalId);
+    return profesional?.consultorioNumero || null;
   };
 
   const formatearFecha = (fecha: string) => {
@@ -55,6 +60,7 @@ export default function CitaTable({ citas, pacientes, profesionales }: CitaTable
                   <TableHead className="font-semibold">ID</TableHead>
                   <TableHead className="font-semibold">Paciente</TableHead>
                   <TableHead className="font-semibold">Profesional</TableHead>
+                  <TableHead className="font-semibold">Consultorio</TableHead>
                   <TableHead className="font-semibold">Fecha</TableHead>
                   <TableHead className="font-semibold">Motivo</TableHead>
                   <TableHead className="font-semibold">Estado</TableHead>
@@ -77,6 +83,16 @@ export default function CitaTable({ citas, pacientes, profesionales }: CitaTable
                         <Stethoscope className="w-4 h-4 text-secondary" />
                         <span className="font-medium">{getProfesionalNombre(cita.profesionalId)}</span>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {getConsultorioInfo(cita.profesionalId) ? (
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-accent-foreground" />
+                          <Badge variant="secondary">Sala {getConsultorioInfo(cita.profesionalId)}</Badge>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sin asignar</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-muted-foreground">

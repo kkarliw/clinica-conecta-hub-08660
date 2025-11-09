@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ProfesionalSalud } from "@/types";
-import { Stethoscope, Mail, Phone, Filter } from "lucide-react";
+import { Stethoscope, Mail, Phone, Filter, Building2 } from "lucide-react";
 
 interface ProfesionalTableProps {
   profesionales: ProfesionalSalud[];
@@ -65,6 +65,7 @@ export default function ProfesionalTable({ profesionales }: ProfesionalTableProp
                   <TableHead className="font-semibold">ID</TableHead>
                   <TableHead className="font-semibold">Nombre</TableHead>
                   <TableHead className="font-semibold">Especialidad</TableHead>
+                  <TableHead className="font-semibold">Consultorio</TableHead>
                   <TableHead className="font-semibold">Correo</TableHead>
                   <TableHead className="font-semibold">Teléfono</TableHead>
                 </TableRow>
@@ -80,6 +81,19 @@ export default function ProfesionalTable({ profesionales }: ProfesionalTableProp
                       <Badge className="bg-secondary text-secondary-foreground">
                         {profesional.especialidad}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {profesional.consultorioNumero ? (
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-primary" />
+                          <Badge variant="secondary">Sala {profesional.consultorioNumero}</Badge>
+                          {profesional.consultorioUbicacion && (
+                            <span className="text-xs text-muted-foreground">({profesional.consultorioUbicacion})</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sin asignar</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-muted-foreground">

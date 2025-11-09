@@ -19,6 +19,7 @@ import RecuperarPassword from "@/pages/RecuperarPassword";
 import Dashboard from "@/pages/Dashboard";
 import Pacientes from "@/pages/Pacientes";
 import Profesionales from "@/pages/Profesionales";
+import Consultorios from "@/pages/Consultorios";
 import Citas from "@/pages/Citas";
 import HistoriasClinicas from "@/pages/HistoriasClinicas";
 import DoctorDashboard from "@/pages/doctor/DoctorDashboard";
@@ -97,6 +98,11 @@ const App = () => (
                 <AdminLayout><Citas /></AdminLayout>
               </RequireRole>
             } />
+            <Route path="/admin/consultorios" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><Consultorios /></AdminLayout>
+              </RequireRole>
+            } />
             <Route path="/admin/historias" element={
               <RequireRole role="ADMIN">
                 <AdminLayout><HistoriasClinicas /></AdminLayout>
@@ -122,6 +128,11 @@ const App = () => (
             <Route path="/recepcion/pacientes" element={
               <RequireRole role="RECEPCIONISTA">
                 <RecepcionistaLayout><RecepcionistaPacientes /></RecepcionistaLayout>
+              </RequireRole>
+            } />
+            <Route path="/recepcion/consultorios" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><Consultorios /></RecepcionistaLayout>
               </RequireRole>
             } />
             <Route path="/recepcion/perfil" element={

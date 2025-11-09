@@ -221,4 +221,31 @@ export const updateUsuarioPerfil = async (usuarioId: number, data: any): Promise
   throw new Error('Endpoint PUT /api/usuarios/:id no implementado en backend');
 };
 
+// ============================================
+// CONSULTORIOS
+// ============================================
+export const getConsultorios = async (): Promise<any[]> => {
+  const response = await api.get('/consultorios');
+  return response.data;
+};
+
+export const getConsultorioById = async (id: number): Promise<any> => {
+  const response = await api.get(`/consultorios/${id}`);
+  return response.data;
+};
+
+export const createConsultorio = async (consultorio: any): Promise<any> => {
+  const response = await api.post('/consultorios', consultorio);
+  return response.data;
+};
+
+export const updateConsultorio = async (id: number, consultorio: any): Promise<any> => {
+  const response = await api.put(`/consultorios/${id}`, consultorio);
+  return response.data;
+};
+
+export const deleteConsultorio = async (id: number): Promise<void> => {
+  await api.delete(`/consultorios/${id}`);
+};
+
 export default api;
