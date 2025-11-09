@@ -47,6 +47,7 @@ import RecepcionistaProfile from "@/pages/recepcionista/RecepcionistaProfile";
 import DashboardPaciente from "@/pages/dashboard/DashboardPaciente";
 import DashboardMedico from "@/pages/dashboard/DashboardMedico";
 import DashboardAdmin from "@/pages/dashboard/DashboardAdmin";
+import DashboardEstadisticas from "@/pages/dashboard/DashboardEstadisticas";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -136,6 +137,11 @@ const App = () => (
             <Route path="/historias-clinicas" element={
               <RequireRole role="ADMIN">
                 <Layout><HistoriasClinicas /></Layout>
+              </RequireRole>
+            } />
+            <Route path="/estadisticas" element={
+              <RequireRole role="ADMIN">
+                <Layout><DashboardEstadisticas /></Layout>
               </RequireRole>
             } />
 

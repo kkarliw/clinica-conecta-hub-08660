@@ -92,6 +92,7 @@ export default function DashboardAdmin() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
+            onClick={() => navigate("/estadisticas")}
             role="button"
             tabIndex={0}
             aria-label="Ver estadísticas"
