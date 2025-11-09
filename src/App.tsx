@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import RequireRole from "@/components/RequireRole";
 import Layout from "@/components/Layout";
+import AdminLayout from "@/components/layouts/AdminLayout";
 import DoctorLayout from "@/components/layouts/DoctorLayout";
 import PatientLayout from "@/components/layouts/PatientLayout";
 import CaregiverLayout from "@/components/layouts/CaregiverLayout";
@@ -48,6 +49,7 @@ import DashboardPaciente from "@/pages/dashboard/DashboardPaciente";
 import DashboardMedico from "@/pages/dashboard/DashboardMedico";
 import DashboardAdmin from "@/pages/dashboard/DashboardAdmin";
 import DashboardEstadisticas from "@/pages/dashboard/DashboardEstadisticas";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -74,146 +76,129 @@ const App = () => (
             <Route path="/verificacion" element={<Verificacion />} />
             <Route path="/recuperar-password" element={<RecuperarPassword />} />
             
-            {/* New Role-Based Dashboard Routes */}
-            <Route path="/dashboard/paciente" element={
-              <RequireRole role="PACIENTE">
-                <DashboardPaciente />
-              </RequireRole>
-            } />
-            <Route path="/dashboard/medico" element={
-              <RequireRole role="MEDICO">
-                <DashboardMedico />
-              </RequireRole>
-            } />
-            <Route path="/dashboard/admin" element={
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={
               <RequireRole role="ADMIN">
-                <DashboardAdmin />
+                <AdminLayout><AdminDashboard /></AdminLayout>
               </RequireRole>
             } />
-            <Route path="/dashboard/recepcionista" element={
-              <RequireRole role="RECEPCIONISTA">
-                <RecepcionistaLayout><RecepcionistaDashboard /></RecepcionistaLayout>
+            <Route path="/admin/pacientes" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><Pacientes /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/profesionales" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><Profesionales /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/citas" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><Citas /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/historias" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><HistoriasClinicas /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/estadisticas" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><DashboardEstadisticas /></AdminLayout>
               </RequireRole>
             } />
 
             {/* Recepcionista Routes */}
-            <Route path="/recepcionista/citas" element={
+            <Route path="/recepcion/dashboard" element={
+              <RequireRole role="RECEPCIONISTA">
+                <RecepcionistaLayout><RecepcionistaDashboard /></RecepcionistaLayout>
+              </RequireRole>
+            } />
+            <Route path="/recepcion/citas" element={
               <RequireRole role="RECEPCIONISTA">
                 <RecepcionistaLayout><RecepcionistaCitas /></RecepcionistaLayout>
               </RequireRole>
             } />
-            <Route path="/recepcionista/pacientes" element={
+            <Route path="/recepcion/pacientes" element={
               <RequireRole role="RECEPCIONISTA">
                 <RecepcionistaLayout><RecepcionistaPacientes /></RecepcionistaLayout>
               </RequireRole>
             } />
-            <Route path="/recepcionista/perfil" element={
+            <Route path="/recepcion/perfil" element={
               <RequireRole role="RECEPCIONISTA">
                 <RecepcionistaLayout><RecepcionistaProfile /></RecepcionistaLayout>
               </RequireRole>
             } />
 
-            {/* Admin Management Routes */}
-            <Route path="/dashboard" element={
-              <RequireRole role="ADMIN">
-                <Layout><Dashboard /></Layout>
-              </RequireRole>
-            } />
-            <Route path="/pacientes" element={
-              <RequireRole role="ADMIN">
-                <Layout><Pacientes /></Layout>
-              </RequireRole>
-            } />
-            <Route path="/profesionales" element={
-              <RequireRole role="ADMIN">
-                <Layout><Profesionales /></Layout>
-              </RequireRole>
-            } />
-            <Route path="/citas" element={
-              <RequireRole role="ADMIN">
-                <Layout><Citas /></Layout>
-              </RequireRole>
-            } />
-            <Route path="/historias-clinicas" element={
-              <RequireRole role="ADMIN">
-                <Layout><HistoriasClinicas /></Layout>
-              </RequireRole>
-            } />
-            <Route path="/estadisticas" element={
-              <RequireRole role="ADMIN">
-                <Layout><DashboardEstadisticas /></Layout>
-              </RequireRole>
-            } />
-
-            {/* Doctor/Specialist Routes (shared) */}
-            <Route path="/doctor/dashboard" element={
+            {/* Doctor Routes */}
+            <Route path="/medico/dashboard" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><DoctorDashboard /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/agenda" element={
+            <Route path="/medico/agenda" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><DoctorAgenda /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/patients" element={
+            <Route path="/medico/pacientes" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><DoctorPatients /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/history/:id" element={
+            <Route path="/medico/historias/:id" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><ViewPatientHistory /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/history/new" element={
+            <Route path="/medico/historias/nueva" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><NewHistoriaClinica /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/completar-cita" element={
+            <Route path="/medico/completar-cita" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><CompletarCita /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/prescriptions" element={
+            <Route path="/medico/formulas" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><DoctorPrescriptions /></DoctorLayout>
               </RequireRole>
             } />
-            <Route path="/doctor/profile" element={
+            <Route path="/medico/perfil" element={
               <RequireRole role="MEDICO">
                 <DoctorLayout><DoctorProfile /></DoctorLayout>
               </RequireRole>
             } />
 
             {/* Patient Routes */}
-            <Route path="/patient/dashboard" element={
+            <Route path="/paciente/dashboard" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientDashboard /></PatientLayout>
               </RequireRole>
             } />
-            <Route path="/patient/appointments" element={
+            <Route path="/paciente/citas" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientAppointments /></PatientLayout>
               </RequireRole>
             } />
-            <Route path="/patient/appointments/new" element={
+            <Route path="/paciente/citas/nueva" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><NewAppointment /></PatientLayout>
               </RequireRole>
             } />
-            <Route path="/patient/history" element={
+            <Route path="/paciente/historial" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientHistory /></PatientLayout>
               </RequireRole>
             } />
-            <Route path="/patient/health" element={
+            <Route path="/paciente/salud" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientHealth /></PatientLayout>
               </RequireRole>
             } />
-            <Route path="/patient/profile" element={
+            <Route path="/paciente/perfil" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientProfile /></PatientLayout>
               </RequireRole>

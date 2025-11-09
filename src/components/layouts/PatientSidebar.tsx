@@ -14,11 +14,11 @@ import {
 import healixLogo from "@/assets/healix-logo.png";
 
 const menuItems = [
-  { title: "Inicio", url: "/patient/dashboard", icon: LayoutDashboard },
-  { title: "Mis Citas", url: "/patient/appointments", icon: Calendar },
-  { title: "Historial Médico", url: "/patient/history", icon: FileText },
-  { title: "Mi Salud", url: "/patient/health", icon: Heart },
-  { title: "Mi Perfil", url: "/patient/profile", icon: User },
+  { title: "Inicio", url: "/paciente/dashboard", icon: LayoutDashboard },
+  { title: "Mis Citas", url: "/paciente/citas", icon: Calendar },
+  { title: "Historial Médico", url: "/paciente/historial", icon: FileText },
+  { title: "Mi Salud", url: "/paciente/salud", icon: Heart },
+  { title: "Mi Perfil", url: "/paciente/perfil", icon: User },
 ];
 
 export function PatientSidebar() {
