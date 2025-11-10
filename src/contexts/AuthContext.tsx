@@ -53,12 +53,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       const { token: newToken, id, nombre, email, rol } = response.data;
+
+      // Normalizar rol desde backend para evitar diferencias de formato
+      const rawRole = String(rol || '').trim().toUpperCase();
+      const mappedRole: UserRole =
+        rawRole === 'DOCTOR' ? 'MEDICO' :
+        rawRole === 'RECEPCION' ? 'RECEPCIONISTA' :
+        rawRole === 'ADMINISTRADOR' ? 'ADMIN' :
+        rawRole === 'CAREGIVER' ? 'CUIDADOR' :
+        (['PACIENTE','MEDICO','RECEPCIONISTA','ADMIN','CUIDADOR'].includes(rawRole) ? (rawRole as UserRole) : 'PACIENTE');
       
       const newUser: User = {
         id,
         nombre,
         correo: email,
-        rol: rol as UserRole,
+        rol: mappedRole,
         verificado: true
       };
 
@@ -71,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
       // Redirigir según el rol
-      switch (rol as UserRole) {
+      switch (mappedRole) {
         case 'PACIENTE':
           navigate('/paciente/dashboard', { replace: true });
           break;
@@ -88,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           navigate('/admin/dashboard', { replace: true });
           break;
         default:
-          navigate('/', { replace: true });
+          navigate('/login', { replace: true });
       }
     } catch (error: any) {
       console.error('Error en login:', error);
