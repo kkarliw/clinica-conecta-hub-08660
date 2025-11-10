@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Activity, Heart, Droplet, TrendingUp, Weight, Pill, CheckCircle2 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -6,55 +6,77 @@ import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { getPanelSaludPaciente } from '@/lib/api';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { toast } from 'sonner';
 
 export default function PatientHealth() {
   const [activeTab, setActiveTab] = useState('vitales');
+  const { user } = useAuth();
+
+  const { data: panel, isLoading, isError } = useQuery({
+    queryKey: ['panel-salud', user?.id],
+    queryFn: () => getPanelSaludPaciente(user!.id),
+    enabled: !!user?.id,
+  });
+
+  if (isError) {
+    toast.error('No se pudo cargar tu panel de salud');
+  }
+
+  if (isLoading) {
+    return <LoadingState message="Cargando tu panel de salud..." />;
+  }
+
+  const vit = panel?.ultimosSignosVitales;
 
   const vitales = [
     {
       icon: Heart,
       label: 'Presión Arterial',
-      value: '120/80',
+      value: vit ? `${vit.presionSistolica}/${vit.presionDiastolica}` : '--',
       unit: 'mmHg',
-      status: 'Normal',
+      status: vit ? 'Medido' : 'Sin datos',
       color: 'bg-green-500/10 text-green-600',
       iconColor: 'text-green-600'
     },
     {
       icon: Activity,
       label: 'Frecuencia Cardíaca',
-      value: '72',
+      value: vit?.frecuenciaCardiaca ?? '--',
       unit: 'bpm',
-      status: 'Normal',
+      status: vit ? 'Medido' : 'Sin datos',
       color: 'bg-blue-500/10 text-blue-600',
       iconColor: 'text-blue-600'
     },
     {
       icon: Droplet,
-      label: 'Glucosa',
-      value: '95',
-      unit: 'mg/dL',
-      status: 'Normal',
+      label: 'Saturación O₂',
+      value: vit?.saturacionOxigeno ?? '--',
+      unit: '%',
+      status: vit ? 'Medido' : 'Sin datos',
       color: 'bg-purple-500/10 text-purple-600',
       iconColor: 'text-purple-600'
     },
     {
       icon: TrendingUp,
       label: 'IMC',
-      value: '23.5',
+      value: vit && vit.peso && vit.altura ? (vit.peso / ((vit.altura/100) ** 2)).toFixed(1) : '--',
       unit: 'kg/m²',
-      status: 'Peso saludable',
+      status: vit ? 'Calculado' : 'Sin datos',
       color: 'bg-orange-500/10 text-orange-600',
       iconColor: 'text-orange-600'
     }
   ];
 
-  const vacunas = [
-    { nombre: 'COVID-19', fecha: '2024-01-15', refuerzo: '2024-07-15', estado: 'Al día' },
-    { nombre: 'Influenza', fecha: '2023-11-20', refuerzo: '2024-11-20', estado: 'Al día' },
-    { nombre: 'Hepatitis B', fecha: '2020-03-10', refuerzo: '-', estado: 'Completa' },
-    { nombre: 'Tétanos', fecha: '2022-05-15', refuerzo: '2032-05-15', estado: 'Al día' },
-  ];
+  const vacunas = (panel?.vacunasPendientes || []).map((v: any) => ({
+    nombre: v.nombreVacuna,
+    fecha: v.fechaAplicacion || new Date().toISOString(),
+    refuerzo: v.proximaDosis || '-',
+    estado: v.estado || 'PENDIENTE',
+  }));
 
   const recomendaciones = [
     {
@@ -89,7 +111,7 @@ export default function PatientHealth() {
         title="Panel de Salud"
         description="Seguimiento completo de tu estado de salud"
         breadcrumbs={[
-          { label: 'Dashboard', href: '/patient/dashboard' },
+          { label: 'Dashboard', href: '/paciente/dashboard' },
           { label: 'Mi Salud' }
         ]}
       />

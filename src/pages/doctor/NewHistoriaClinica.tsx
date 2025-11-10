@@ -32,7 +32,7 @@ export default function NewHistoriaClinica() {
       const token = localStorage.getItem('healix_token');
       const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
       
-      const response = await fetch('http://localhost:4567/api/historial', {
+      const response = await fetch('http://localhost:4567/api/historias', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,25 +46,12 @@ export default function NewHistoriaClinica() {
         }),
       });
 
-      if (response.ok) {
+      if (response.status === 401) { window.location.href = '/login'; return; }
+      if (response.status === 403) { toast({ title: 'Acceso denegado', description: 'No tienes permisos para crear historias', variant: 'destructive' }); return; }
         const historia = await response.json();
         
-        // Si requiere incapacidad, crear automáticamente
-        if (formData.requiereIncapacidad) {
-          await fetch('http://localhost:4567/api/incapacidades', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              historiaClinicaId: historia.id,
-              pacienteId,
-              diasIncapacidad: 3, // Valor por defecto
-              fechaInicio: new Date().toISOString(),
-            }),
-          });
-        }
+        // (Incapacidad automática omitida: no hay endpoint en backend actual)
+
 
         // Actualizar estado de la cita
         if (citaId) {
@@ -83,7 +70,7 @@ export default function NewHistoriaClinica() {
           description: 'El registro médico ha sido guardado exitosamente',
         });
         
-        navigate('/doctor/agenda');
+        navigate('/medico/agenda');
       } else {
         throw new Error('Error al crear historia clínica');
       }

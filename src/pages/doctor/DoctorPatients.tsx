@@ -25,9 +25,10 @@ export default function DoctorPatients() {
   }, []);
 
   useEffect(() => {
+    const term = searchTerm.toLowerCase();
     const filtered = pacientes.filter(p =>
-      p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.correo.toLowerCase().includes(searchTerm.toLowerCase())
+      (p.nombre || '').toLowerCase().includes(term) ||
+      (p.correo || '').toLowerCase().includes(term)
     );
     setFilteredPacientes(filtered);
   }, [searchTerm, pacientes]);
@@ -42,9 +43,10 @@ export default function DoctorPatients() {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        setPacientes(data);
-        setFilteredPacientes(data);
+        const raw = await response.json();
+        const mapped = raw.map((p: any) => ({ ...p, correo: p.email }));
+        setPacientes(mapped);
+        setFilteredPacientes(mapped);
       }
     } catch (error) {
       console.error('Error al cargar pacientes:', error);
@@ -111,7 +113,7 @@ export default function DoctorPatients() {
                 <Button
                   variant="outline"
                   className="w-full gap-2"
-                  onClick={() => navigate(`/doctor/history/${paciente.id}`)}
+                  onClick={() => navigate(`/medico/historias/${paciente.id}`)}
                 >
                   <FileText className="w-4 h-4" />
                   Ver Historia

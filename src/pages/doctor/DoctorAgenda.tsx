@@ -44,11 +44,21 @@ export default function DoctorAgenda() {
         },
       });
       
+      if (response.status === 401) { window.location.href = '/login'; return; }
+      if (response.status === 403) { toast({ title: 'Acceso denegado', description: 'No tienes permisos para ver estas citas', variant: 'destructive' }); return; }
+      
       if (response.ok) {
-        const data = await response.json();
-        const misCitas = data.filter((c: Cita) => 
-          c.profesionalId === user.id
-        );
+        const raw = await response.json();
+        const normalized: Cita[] = raw.map((c: any) => ({
+          id: c.id,
+          fecha: c.fecha,
+          motivo: c.motivo,
+          estado: c.estado,
+          pacienteNombre: c.paciente?.nombre || 'Paciente',
+          pacienteId: c.paciente?.id,
+          profesionalId: c.profesional?.id,
+        }));
+        const misCitas = normalized.filter((c: Cita) => c.profesionalId === user.id);
         setCitas(misCitas);
       }
     } catch (error) {
@@ -81,7 +91,7 @@ export default function DoctorAgenda() {
   };
 
   const handleAtender = (citaId: number, pacienteId: number, pacienteNombre: string) => {
-    navigate('/doctor/completar-cita', { state: { citaId, pacienteId, pacienteNombre } });
+    navigate('/medico/completar-cita', { state: { citaId, pacienteId, pacienteNombre } });
   };
 
   const getFilteredCitas = () => {
@@ -112,10 +122,10 @@ export default function DoctorAgenda() {
       <PageHeader
         title="Mi Agenda"
         description="Gestiona tus citas programadas"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/doctor/dashboard' },
-          { label: 'Agenda' }
-        ]}
+          breadcrumbs={[
+            { label: 'Dashboard', href: '/medico/dashboard' },
+            { label: 'Agenda' }
+          ]}
         actions={
           <Button onClick={enableNotifications} variant="outline" className="gap-2">
             <Bell className="w-4 h-4" />

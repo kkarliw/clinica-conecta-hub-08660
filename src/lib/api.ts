@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { Paciente, ProfesionalSalud, CitaMedica } from '@/types';
+import { toast } from 'sonner';
 
 // Backend Java (Spark Framework) - Puerto 4567
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4567/api';
@@ -30,11 +31,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    if (status === 401) {
       // Token expirado o inválido
       localStorage.removeItem('healix_token');
       localStorage.removeItem('healix_user');
       window.location.href = '/login';
+    } else if (status === 403) {
+      // Acceso denegado
+      const serverMessage = error.response?.data?.message || 'No tienes permisos para realizar esta acción.';
+      try { toast.error('Acceso denegado', { description: serverMessage }); } catch (_) {}
     }
     return Promise.reject(error);
   }
@@ -171,17 +177,17 @@ export const getCitasProximas = async (dias: number = 7): Promise<CitaMedica[]> 
 
 // Historias Clínicas
 export const getHistoriasClinicas = async (): Promise<any[]> => {
-  const response = await api.get<any[]>('/historias-clinicas');
+  const response = await api.get<any[]>('/historias');
   return response.data;
 };
 
 export const getHistoriasClinicasPaciente = async (pacienteId: number): Promise<any[]> => {
-  const response = await api.get<any[]>(`/historias-clinicas/paciente/${pacienteId}`);
+  const response = await api.get<any[]>(`/historias/paciente/${pacienteId}`);
   return response.data;
 };
 
 export const createHistoriaClinica = async (historia: any): Promise<any> => {
-  const response = await api.post<any>('/historial', historia);
+  const response = await api.post<any>('/historias', historia);
   return response.data;
 };
 
@@ -203,6 +209,14 @@ export const getEstadisticas = async (): Promise<any> => {
 
 export const getEstadisticasMedico = async (medicoId: number): Promise<any> => {
   const response = await api.get(`/estadisticas/medico/${medicoId}`);
+  return response.data;
+};
+
+// ============================================
+// PANEL DE SALUD DEL PACIENTE
+// ============================================
+export const getPanelSaludPaciente = async (pacienteId: number): Promise<any> => {
+  const response = await api.get(`/pacientes/${pacienteId}/panel-salud`);
   return response.data;
 };
 

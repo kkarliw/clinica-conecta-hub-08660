@@ -47,15 +47,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (correo: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email: correo, password });
-      // El backend devuelve { token, rol, nombre, id } directamente
-      const { token: newToken, rol, nombre, id } = response.data;
-      
+      // Backend devuelve { token, id, nombre, email, rol }
+      const { token: newToken, id, nombre, email, rol: backendRol } = response.data;
+
+      // Normalizar rol
+      const rawRole = (backendRol || '').toString().toUpperCase();
+      const roleMap: Record<string, UserRole> = {
+        'PACIENTE': 'PACIENTE',
+        'PATIENT': 'PACIENTE',
+        'MEDICO': 'MEDICO',
+        'DOCTOR': 'MEDICO',
+        'RECEPCIONISTA': 'RECEPCIONISTA',
+        'RECEPCION': 'RECEPCIONISTA',
+        'CUIDADOR': 'CUIDADOR',
+        'CAREGIVER': 'CUIDADOR',
+        'ADMIN': 'ADMIN',
+        'ADMINISTRADOR': 'ADMIN',
+      };
+      const mappedRole = roleMap[rawRole] || 'PACIENTE';
+
       // Construir objeto user compatible con el frontend
       const newUser: User = {
         id: id || 0,
         nombre,
-        correo,
-        rol: rol as UserRole,
+        correo: email || correo,
+        rol: mappedRole,
         verificado: true
       };
 
@@ -67,7 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
-      switch (rol as UserRole) {
+      // Redirigir según rol
+      switch (mappedRole) {
         case 'PACIENTE':
           navigate('/paciente/dashboard');
           break;
@@ -84,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           navigate('/admin/dashboard');
           break;
         default:
-          navigate('/');
+          navigate('/paciente/dashboard');
       }
     } catch (error: any) {
       console.error('Error en login:', error);
