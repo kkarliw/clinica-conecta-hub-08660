@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { getCitasHoy, getPacientes } from "@/lib/api";
-import { registrarLlegadaPaciente } from "@/services/recepcionista.service";
+import { getCitas, getPacientes, updateCita } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function RecepcionistaDashboard() {
@@ -15,9 +14,10 @@ export default function RecepcionistaDashboard() {
   const queryClient = useQueryClient();
   const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const { data: citasHoy = [], isLoading: loadingCitas } = useQuery({
-    queryKey: ["citas-hoy"],
-    queryFn: getCitasHoy,
+  // Obtener todas las citas y filtrar en el frontend por hoy
+  const { data: todasCitas = [], isLoading: loadingCitas } = useQuery({
+    queryKey: ["citas"],
+    queryFn: getCitas,
     refetchInterval: 30000, // Refrescar cada 30 segundos
   });
 
@@ -26,20 +26,23 @@ export default function RecepcionistaDashboard() {
     queryFn: getPacientes,
   });
 
-  const citasPendientes = citasHoy.filter(c => c.estado === 'pendiente');
-  const citasConfirmadas = citasHoy.filter(c => c.estado === 'confirmada');
-  const citasCompletadas = citasHoy.filter(c => c.estado === 'completada');
+  // Filtrar citas de hoy
+  const hoy = new Date().toISOString().split('T')[0];
+  const citasHoy = todasCitas.filter(cita => 
+    cita.fecha.startsWith(hoy)
+  );
+
+  const citasPendientes = citasHoy.filter(c => c.estado?.toLowerCase() === 'pendiente');
+  const citasConfirmadas = citasHoy.filter(c => c.estado?.toLowerCase() === 'confirmada');
+  const citasCompletadas = citasHoy.filter(c => c.estado?.toLowerCase() === 'completada');
 
   const marcarLlegadaMutation = useMutation({
-    mutationFn: ({ citaId, medicoId, pacienteNombre }: { 
-      citaId: number; 
-      medicoId: number; 
-      pacienteNombre: string;
-    }) => registrarLlegadaPaciente(citaId, medicoId, pacienteNombre),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["citas-hoy"] });
-      toast.success(`Paciente ${variables.pacienteNombre} registrado`, {
-        description: "Se ha notificado al médico"
+    mutationFn: (citaId: number) => updateCita(citaId, { estado: 'confirmada' }),
+    onSuccess: (_, citaId) => {
+      queryClient.invalidateQueries({ queryKey: ["citas"] });
+      const cita = citasHoy.find(c => c.id === citaId);
+      toast.success(`Paciente registrado`, {
+        description: `Se ha marcado la llegada${cita?.paciente?.nombre ? ` de ${cita.paciente.nombre}` : ''}`
       });
     },
     onError: (error: any) => {
@@ -50,18 +53,14 @@ export default function RecepcionistaDashboard() {
   });
 
   const handleMarcarLlegada = (cita: any) => {
-    if (!cita.profesionalId) {
-      toast.error("No se puede notificar", {
-        description: "La cita no tiene médico asignado"
+    if (!cita.id) {
+      toast.error("Error", {
+        description: "Cita inválida"
       });
       return;
     }
 
-    marcarLlegadaMutation.mutate({
-      citaId: cita.id,
-      medicoId: cita.profesionalId,
-      pacienteNombre: cita.pacienteNombre || 'Paciente'
-    });
+    marcarLlegadaMutation.mutate(cita.id);
   };
 
   const stats = [
@@ -94,6 +93,21 @@ export default function RecepcionistaDashboard() {
       bg: "bg-secondary/10"
     },
   ];
+
+  const getEstadoBadgeVariant = (estado?: string) => {
+    switch (estado?.toLowerCase()) {
+      case 'completada':
+        return 'default';
+      case 'confirmada':
+        return 'secondary';
+      case 'pendiente':
+        return 'outline';
+      case 'cancelada':
+        return 'destructive';
+      default:
+        return 'outline';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -147,63 +161,69 @@ export default function RecepcionistaDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {citasHoy.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-3 opacity-40" />
-                <p>No hay citas programadas para hoy</p>
-              </div>
-            ) : (
-              citasHoy.map((cita) => (
-                <motion.div
-                  key={cita.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col items-center justify-center w-16 h-16 rounded-lg bg-primary/10 text-primary">
-                      <span className="text-lg font-bold">
-                        {new Date(cita.fecha).getHours().toString().padStart(2, '0')}
-                      </span>
-                      <span className="text-xs">
-                        {new Date(cita.fecha).getMinutes().toString().padStart(2, '0')}
-                      </span>
+          {loadingCitas ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {citasHoy.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                  <p>No hay citas programadas para hoy</p>
+                </div>
+              ) : (
+                citasHoy.map((cita) => (
+                  <motion.div
+                    key={cita.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col items-center justify-center w-16 h-16 rounded-lg bg-primary/10 text-primary">
+                        <span className="text-lg font-bold">
+                          {new Date(cita.fecha).getHours().toString().padStart(2, '0')}
+                        </span>
+                        <span className="text-xs">
+                          {new Date(cita.fecha).getMinutes().toString().padStart(2, '0')}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium">
+                          {cita.paciente?.nombre} {cita.paciente?.apellido || ''}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Dr. {cita.profesional?.nombre} {cita.profesional?.apellido || ''}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{cita.motivo}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{cita.pacienteNombre || 'Paciente'}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Dr. {cita.profesionalNombre || 'Profesional'}
-                      </p>
-                      <p className="text-sm text-muted-foreground">{cita.motivo}</p>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={getEstadoBadgeVariant(cita.estado)}>
+                        {cita.estado || 'pendiente'}
+                      </Badge>
+                      {cita.estado?.toLowerCase() !== 'completada' && cita.estado?.toLowerCase() !== 'cancelada' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleMarcarLlegada(cita)}
+                          className="gap-2"
+                          disabled={marcarLlegadaMutation.isPending || cita.estado?.toLowerCase() === 'confirmada'}
+                        >
+                          <Bell className="h-4 w-4" />
+                          {cita.estado?.toLowerCase() === 'confirmada' 
+                            ? 'Registrado' 
+                            : marcarLlegadaMutation.isPending 
+                              ? 'Marcando...' 
+                              : 'Marcar llegada'}
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant={
-                        cita.estado === 'completada' ? 'default' :
-                        cita.estado === 'confirmada' ? 'secondary' :
-                        'outline'
-                      }
-                    >
-                      {cita.estado}
-                    </Badge>
-                    {cita.estado !== 'completada' && (
-                      <Button
-                        size="sm"
-                        onClick={() => handleMarcarLlegada(cita)}
-                        className="gap-2"
-                        disabled={marcarLlegadaMutation.isPending}
-                      >
-                        <Bell className="h-4 w-4" />
-                        {marcarLlegadaMutation.isPending ? 'Marcando...' : 'Marcar llegada'}
-                      </Button>
-                    )}
-                  </div>
-                </motion.div>
-              ))
-            )}
-          </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -235,6 +255,13 @@ export default function RecepcionistaDashboard() {
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 border-l-4 border-blue-600 rounded">
                 <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
                   {citasCompletadas.length} cita{citasCompletadas.length > 1 ? 's' : ''} completada{citasCompletadas.length > 1 ? 's' : ''} hoy
+                </p>
+              </div>
+            )}
+            {citasHoy.length === 0 && (
+              <div className="p-3 bg-muted rounded text-center">
+                <p className="text-sm text-muted-foreground">
+                  No hay alertas pendientes
                 </p>
               </div>
             )}
