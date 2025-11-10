@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, Plus } from 'lucide-react';
+import { Calendar, Clock, User, Plus, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -10,15 +10,26 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useQuery } from '@tanstack/react-query';
-import { getCitasPaciente } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCitasPaciente, updateCita } from '@/lib/api';
 import { useState } from 'react';
+import { toast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Cita {
-  id: number;
+  id?: number;
   fecha: string;
   motivo: string;
-  estado: string;
+  estado?: string;
   profesional?: {
     nombre?: string;
     apellido?: string;
@@ -28,7 +39,9 @@ interface Cita {
 
 export default function PatientAppointments() {
   const [activeTab, setActiveTab] = useState('proximas');
+  const [citaToCancel, setCitaToCancel] = useState<number | null>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
   const pacienteId = user.id || 0;
@@ -39,7 +52,26 @@ export default function PatientAppointments() {
     enabled: pacienteId > 0,
   });
 
-  const getEstadoBadge = (estado: string) => {
+  const cancelCitaMutation = useMutation({
+    mutationFn: (citaId: number) => updateCita(citaId, { estado: 'cancelada' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['citas-paciente'] });
+      toast({
+        title: 'Cita cancelada',
+        description: 'Tu cita ha sido cancelada exitosamente',
+      });
+      setCitaToCancel(null);
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'No se pudo cancelar la cita. Intenta nuevamente.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const getEstadoBadge = (estado?: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
       'pendiente': { variant: 'default', label: 'Pendiente' },
       'confirmada': { variant: 'secondary', label: 'Confirmada' },
@@ -61,6 +93,16 @@ export default function PatientAppointments() {
       default:
         return citas;
     }
+  };
+
+  const canCancelCita = (cita: Cita) => {
+    if (!cita.id || !cita.estado) return false;
+    const citaDate = new Date(cita.fecha);
+    const now = new Date();
+    const estado = cita.estado.toLowerCase();
+    
+    // Solo se puede cancelar si está pendiente o confirmada y es una cita futura
+    return (estado === 'pendiente' || estado === 'confirmada') && citaDate > now;
   };
 
   const filteredCitas = getFilteredCitas();
@@ -144,6 +186,18 @@ export default function PatientAppointments() {
                           </div>
                         </div>
                       </div>
+
+                      {canCancelCita(cita) && cita.id && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCitaToCancel(cita.id!)}
+                          className="gap-2 text-destructive hover:text-destructive"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Cancelar
+                        </Button>
+                      )}
                     </div>
                   </Card>
                 </motion.div>
@@ -152,6 +206,26 @@ export default function PatientAppointments() {
           )}
         </TabsContent>
       </Tabs>
+
+      <AlertDialog open={citaToCancel !== null} onOpenChange={() => setCitaToCancel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Cancelar cita?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro que deseas cancelar esta cita? Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, mantener</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => citaToCancel && cancelCitaMutation.mutate(citaToCancel)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sí, cancelar cita
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
