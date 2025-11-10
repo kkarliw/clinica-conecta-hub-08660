@@ -81,7 +81,7 @@ export default function DoctorAgenda() {
   };
 
   const handleAtender = (citaId: number, pacienteId: number, pacienteNombre: string) => {
-    navigate('/doctor/completar-cita', { state: { citaId, pacienteId, pacienteNombre } });
+    navigate('/medico/completar-cita', { state: { citaId, pacienteId, pacienteNombre } });
   };
 
   const getFilteredCitas = () => {

@@ -88,16 +88,16 @@ export default function PatientAppointments() {
       <PageHeader
         title="Mis Citas"
         description="Gestiona tus citas médicas"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/patient/dashboard' },
-          { label: 'Citas' }
-        ]}
-        actions={
-          <Button onClick={() => navigate('/patient/appointments/new')} className="gap-2">
-            <Plus className="w-4 h-4" />
-            Nueva Cita
-          </Button>
-        }
+          breadcrumbs={[
+            { label: 'Dashboard', href: '/paciente/dashboard' },
+            { label: 'Citas' }
+          ]}
+          actions={
+            <Button onClick={() => navigate('/paciente/citas/nueva')} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Nueva Cita
+            </Button>
+          }
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -115,7 +115,7 @@ export default function PatientAppointments() {
               description={`No tienes citas ${activeTab} registradas.`}
               action={{
                 label: 'Agendar cita',
-                onClick: () => navigate('/patient/appointments/new')
+                onClick: () => navigate('/paciente/citas/nueva')
               }}
             />
           ) : (

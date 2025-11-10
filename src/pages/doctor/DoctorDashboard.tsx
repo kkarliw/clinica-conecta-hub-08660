@@ -182,7 +182,7 @@ export default function DoctorDashboard() {
                 <Clock className="w-5 h-5 text-primary" />
                 Agenda del Día
               </CardTitle>
-              <Button size="sm" onClick={() => navigate("/doctor/agenda")}>
+              <Button size="sm" onClick={() => navigate("/medico/agenda")}>
                 Ver Agenda
               </Button>
             </div>
@@ -241,7 +241,7 @@ export default function DoctorDashboard() {
                   {citas.length > 0 ? Math.round((citasCompletadas.length / citas.length) * 100) : 0}%
                 </span>
               </div>
-              <Button className="w-full" variant="outline" onClick={() => navigate("/doctor/patients")}>
+              <Button className="w-full" variant="outline" onClick={() => navigate("/medico/pacientes")}>
                 <Users className="w-4 h-4 mr-2" />
                 Ver Todos los Pacientes
               </Button>

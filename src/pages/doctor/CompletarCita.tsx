@@ -130,7 +130,7 @@ export default function CompletarCita() {
           description: 'El PDF de incapacidad ha sido descargado',
         });
 
-        setTimeout(() => navigate('/doctor/agenda'), 1500);
+        setTimeout(() => navigate('/medico/agenda'), 1500);
       }
     } catch (error) {
       toast({
@@ -143,7 +143,7 @@ export default function CompletarCita() {
 
   return (
     <div className="container mx-auto py-6 max-w-3xl">
-      <Button variant="ghost" onClick={() => navigate('/doctor/agenda')} className="mb-4">
+      <Button variant="ghost" onClick={() => navigate('/medico/agenda')} className="mb-4">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Volver
       </Button>
@@ -166,7 +166,7 @@ export default function CompletarCita() {
                 Descargar PDF de Incapacidad
               </Button>
             </div>
-            <Button variant="outline" onClick={() => navigate('/doctor/agenda')}>
+            <Button variant="outline" onClick={() => navigate('/medico/agenda')}>
               Ir a mi agenda
             </Button>
           </div>

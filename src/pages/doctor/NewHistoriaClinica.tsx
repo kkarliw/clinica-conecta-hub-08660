@@ -83,7 +83,7 @@ export default function NewHistoriaClinica() {
           description: 'El registro médico ha sido guardado exitosamente',
         });
         
-        navigate('/doctor/agenda');
+        navigate('/medico/agenda');
       } else {
         throw new Error('Error al crear historia clínica');
       }
@@ -100,7 +100,7 @@ export default function NewHistoriaClinica() {
 
   return (
     <div className="container mx-auto py-6 max-w-3xl">
-      <Button variant="ghost" onClick={() => navigate('/doctor/agenda')} className="mb-4">
+      <Button variant="ghost" onClick={() => navigate('/medico/agenda')} className="mb-4">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Volver
       </Button>
