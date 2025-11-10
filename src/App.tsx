@@ -188,6 +188,11 @@ const App = () => (
                 <PatientLayout><NewAppointment /></PatientLayout>
               </RequireRole>
             } />
+            <Route path="/paciente/nueva-cita" element={
+              <RequireRole role="PACIENTE">
+                <PatientLayout><NewAppointment /></PatientLayout>
+              </RequireRole>
+            } />
             <Route path="/paciente/historial" element={
               <RequireRole role="PACIENTE">
                 <PatientLayout><PatientHistory /></PatientLayout>

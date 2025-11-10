@@ -121,7 +121,7 @@ export default function PatientAppointments() {
           { label: 'Citas' }
         ]}
         actions={
-          <Button onClick={() => navigate('/paciente/nueva-cita')} className="gap-2">
+          <Button onClick={() => navigate('/paciente/citas/nueva')} className="gap-2">
             <Plus className="w-4 h-4" />
             Nueva Cita
           </Button>
@@ -143,7 +143,7 @@ export default function PatientAppointments() {
               description={`No tienes citas ${activeTab} registradas.`}
               action={{
                 label: 'Agendar cita',
-                onClick: () => navigate('/paciente/nueva-cita')
+                onClick: () => navigate('/paciente/citas/nueva')
               }}
             />
           ) : (
