@@ -8,6 +8,7 @@ import { User, Mail, Phone, Briefcase, Save, X } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { motion } from 'framer-motion';
 import { Separator } from '@/components/ui/separator';
+import { getProfesionales, updateProfesional } from '@/lib/api';
 
 export default function DoctorProfile() {
   const [editing, setEditing] = useState(false);
@@ -32,29 +33,28 @@ export default function DoctorProfile() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('healix_token');
-      const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
-      
-      const response = await fetch(`http://localhost:4567/api/profesionales/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(profile),
+      const profesionales = await getProfesionales();
+      const record = profesionales.find((p: any) => (p.correo || '').toLowerCase() === (profile.correo || '').toLowerCase());
+
+      if (!record) {
+        throw new Error('Profesional no encontrado para el correo especificado');
+      }
+
+      await updateProfesional(record.id, {
+        nombre: profile.nombre,
+        especialidad: profile.especialidad || undefined,
+        telefono: profile.telefono || undefined,
       });
 
-      if (response.ok) {
-        toast({
-          title: 'Perfil actualizado',
-          description: 'Tus datos han sido guardados correctamente',
-        });
-        setEditing(false);
-      }
-    } catch (error) {
+      toast({
+        title: 'Perfil actualizado',
+        description: 'Tus datos han sido guardados correctamente',
+      });
+      setEditing(false);
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'No se pudo actualizar el perfil',
+        description: error?.message || 'No se pudo actualizar el perfil',
         variant: 'destructive',
       });
     } finally {

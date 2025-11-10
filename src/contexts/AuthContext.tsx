@@ -56,13 +56,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Normalizar rol desde backend para evitar diferencias de formato
       const rawRole = String(rol || '').trim().toUpperCase();
+      const cleaned = rawRole.replace(/^ROLE_/, '');
       const mappedRole: UserRole =
-        rawRole === 'DOCTOR' ? 'MEDICO' :
-        rawRole === 'RECEPCION' ? 'RECEPCIONISTA' :
-        rawRole === 'ADMINISTRADOR' ? 'ADMIN' :
-        rawRole === 'CAREGIVER' ? 'CUIDADOR' :
-        (['PACIENTE','MEDICO','RECEPCIONISTA','ADMIN','CUIDADOR'].includes(rawRole) ? (rawRole as UserRole) : 'PACIENTE');
-      
+        cleaned === 'DOCTOR' ? 'MEDICO' :
+        cleaned === 'MEDICO' ? 'MEDICO' :
+        cleaned === 'RECEPCION' ? 'RECEPCIONISTA' :
+        cleaned === 'RECEPCIONISTA' ? 'RECEPCIONISTA' :
+        cleaned === 'RECEPTIONIST' ? 'RECEPCIONISTA' :
+        cleaned === 'ADMINISTRADOR' ? 'ADMIN' :
+        cleaned === 'ADMIN' ? 'ADMIN' :
+        cleaned === 'CAREGIVER' ? 'CUIDADOR' :
+        cleaned === 'CUIDADOR' ? 'CUIDADOR' :
+        cleaned === 'PATIENT' ? 'PACIENTE' :
+        cleaned === 'PACIENTE' ? 'PACIENTE' :
+        'PACIENTE';
+
       const newUser: User = {
         id,
         nombre,

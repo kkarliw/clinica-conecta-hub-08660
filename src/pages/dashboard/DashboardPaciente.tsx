@@ -28,7 +28,7 @@ export default function DashboardPaciente() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/patient/appointments")}
+            onClick={() => navigate("/paciente/citas")}
             role="button"
             tabIndex={0}
             aria-label="Ver mis citas"
@@ -44,7 +44,7 @@ export default function DashboardPaciente() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/patient/history")}
+            onClick={() => navigate("/paciente/historial")}
             role="button"
             tabIndex={0}
             aria-label="Ver historial clínico"
@@ -60,7 +60,7 @@ export default function DashboardPaciente() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/patient/health")}
+            onClick={() => navigate("/paciente/salud")}
             role="button"
             tabIndex={0}
             aria-label="Panel de salud"
@@ -76,7 +76,7 @@ export default function DashboardPaciente() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/patient/profile")}
+            onClick={() => navigate("/paciente/perfil")}
             role="button"
             tabIndex={0}
             aria-label="Ver perfil"

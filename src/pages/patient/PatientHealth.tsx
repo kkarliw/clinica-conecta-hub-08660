@@ -89,7 +89,7 @@ export default function PatientHealth() {
         title="Panel de Salud"
         description="Seguimiento completo de tu estado de salud"
         breadcrumbs={[
-          { label: 'Dashboard', href: '/patient/dashboard' },
+          { label: 'Dashboard', href: '/paciente/dashboard' },
           { label: 'Mi Salud' }
         ]}
       />

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { User, Mail, Phone, MapPin, Calendar } from 'lucide-react';
+import { getPacientes, updatePaciente } from '@/lib/api';
 
 export default function PatientProfile() {
   const [editing, setEditing] = useState(false);
@@ -31,29 +32,29 @@ export default function PatientProfile() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('healix_token');
-      const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
-      
-      const response = await fetch(`http://localhost:4567/api/pacientes/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(profile),
+      const pacientes = await getPacientes();
+      const record = pacientes.find((p: any) => (p.correo || '').toLowerCase() === (profile.correo || '').toLowerCase());
+
+      if (!record) {
+        throw new Error('Paciente no encontrado para el correo especificado');
+      }
+
+      await updatePaciente(record.id, {
+        nombre: profile.nombre,
+        telefono: profile.telefono || undefined,
+        direccion: profile.direccion || undefined,
+        edad: profile.edad ? Number(profile.edad) : undefined,
       });
 
-      if (response.ok) {
-        toast({
-          title: 'Perfil actualizado',
-          description: 'Tus datos han sido guardados correctamente',
-        });
-        setEditing(false);
-      }
-    } catch (error) {
+      toast({
+        title: 'Perfil actualizado',
+        description: 'Tus datos han sido guardados correctamente',
+      });
+      setEditing(false);
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'No se pudo actualizar el perfil',
+        description: error?.message || 'No se pudo actualizar el perfil',
         variant: 'destructive',
       });
     } finally {

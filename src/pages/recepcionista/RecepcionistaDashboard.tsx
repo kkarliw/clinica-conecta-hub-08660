@@ -98,7 +98,7 @@ export default function RecepcionistaDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Panel de Recepción</h1>
+        <h1 className="text-3xl font-bold text-foreground">Hola, {user?.nombre}</h1>
         <p className="text-muted-foreground mt-1">
           Gestiona la agenda y atención de pacientes
         </p>
