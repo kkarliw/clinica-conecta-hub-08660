@@ -20,7 +20,6 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-  devLogin: (rol: UserRole) => void; // Nuevo método para desarrollo
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -176,42 +175,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate('/login');
   };
 
-  // Modo desarrollo - acceso sin backend
-  const devLogin = (rol: UserRole) => {
-    const fakeToken = 'dev-token-' + Date.now();
-    const fakeUser: User = {
-      id: 999,
-      nombre: 'Usuario Dev',
-      correo: 'dev@healix.com',
-      rol,
-      verificado: true
-    };
-
-    setToken(fakeToken);
-    setUser(fakeUser);
-    localStorage.setItem('healix_token', fakeToken);
-    localStorage.setItem('healix_user', JSON.stringify(fakeUser));
-
-    // Redirigir según el rol
-    switch (rol) {
-      case 'PACIENTE':
-        navigate('/paciente/dashboard');
-        break;
-      case 'MEDICO':
-        navigate('/medico/dashboard');
-        break;
-      case 'RECEPCIONISTA':
-        navigate('/recepcion/dashboard');
-        break;
-      case 'CUIDADOR':
-        navigate('/cuidador/dashboard');
-        break;
-      case 'ADMIN':
-        navigate('/admin/dashboard');
-        break;
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -222,7 +185,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         isAuthenticated: !!token && !!user,
         isLoading,
-        devLogin,
       }}
     >
       {children}

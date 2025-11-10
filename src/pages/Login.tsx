@@ -11,7 +11,7 @@ import healixLogo from "@/assets/healix-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
-  const { login, devLogin } = useAuth();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     correo: "",
     password: ""
@@ -98,64 +98,6 @@ export default function Login() {
                 {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
               </Button>
             </form>
-
-            {/* Modo Desarrollo */}
-            <div className="mt-6 p-4 border border-dashed border-primary/30 rounded-lg bg-primary/5">
-              <p className="text-sm font-medium text-center mb-3">🔧 Modo Desarrollo - Acceso Rápido</p>
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    toast.success("Accediendo como Paciente");
-                    devLogin('PACIENTE');
-                  }}
-                >
-                  Paciente
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    toast.success("Accediendo como Médico");
-                    devLogin('MEDICO');
-                  }}
-                >
-                  Médico
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    toast.success("Accediendo como Recepcionista");
-                    devLogin('RECEPCIONISTA');
-                  }}
-                >
-                  Recepcionista
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    toast.success("Accediendo como Cuidador");
-                    devLogin('CUIDADOR');
-                  }}
-                >
-                  Cuidador
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    toast.success("Accediendo como Admin");
-                    devLogin('ADMIN');
-                  }}
-                  className="col-span-2"
-                >
-                  Admin
-                </Button>
-              </div>
-            </div>
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">¿No tienes cuenta? </span>

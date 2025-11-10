@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Phone, ArrowLeft, Stethoscope, Heart, Shield, Briefcase } from "lucide-react";
+import { User, Mail, Lock, Phone, ArrowLeft, Stethoscope, Heart, Shield, Briefcase, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import healixLogo from "@/assets/healix-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
-type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | null;
+type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | "CUIDADOR" | null;
 
 interface RoleCard {
   role: UserRole;
@@ -34,19 +34,29 @@ const roleCards: RoleCard[] = [
     title: "Médico",
     description: "Gestiona pacientes, citas e historias clínicas",
     icon: Stethoscope,
-    color: "from-primary/20 to-primary/5"
+    color: "from-primary/20 to-primary/5",
+    requiresCode: true
   },
   {
     role: "RECEPCIONISTA",
     title: "Recepcionista",
     description: "Gestiona agendamiento y atención de pacientes",
     icon: Briefcase,
-    color: "from-accent/20 to-accent/5"
+    color: "from-accent/20 to-accent/5",
+    requiresCode: true
+  },
+  {
+    role: "CUIDADOR",
+    title: "Cuidador",
+    description: "Registra y monitorea el cuidado de pacientes",
+    icon: Users,
+    color: "from-blue-500/20 to-blue-500/5",
+    requiresCode: true
   },
   {
     role: "ADMIN",
     title: "Administrador",
-    description: "Gestión completa del sistema (requiere clave)",
+    description: "Gestión completa del sistema",
     icon: Shield,
     color: "from-muted/20 to-muted/5",
     requiresCode: true
@@ -66,7 +76,8 @@ export default function Registro() {
     confirmPassword: "",
     // Campos específicos por rol
     numeroLicencia: "", // Médico
-    claveAdmin: "" // Admin
+    claveAdmin: "", // Admin
+    codigoVerificacion: "" // MEDICO, RECEPCIONISTA, CUIDADOR, ADMIN
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -80,7 +91,8 @@ export default function Registro() {
       password: "",
       confirmPassword: "",
       numeroLicencia: "",
-      claveAdmin: ""
+      claveAdmin: "",
+      codigoVerificacion: ""
     });
   };
 
@@ -99,6 +111,16 @@ export default function Registro() {
         description: "La contraseña debe tener al menos 8 caracteres" 
       });
       return;
+    }
+
+    // Validar código de verificación para roles profesionales
+    if (selectedRole && ['MEDICO', 'RECEPCIONISTA', 'CUIDADOR', 'ADMIN'].includes(selectedRole)) {
+      if (formData.codigoVerificacion !== 'TaylorSwift13') {
+        toast.error("Código de verificación incorrecto", { 
+          description: "El código ingresado no es válido" 
+        });
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -399,6 +421,26 @@ export default function Registro() {
                 </div>
               )}
 
+              {selectedRole === "CUIDADOR" && (
+                <div className="space-y-2">
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="telefono"
+                      type="tel"
+                      placeholder="+57 300 123 4567"
+                      className="pl-10"
+                      value={formData.telefono}
+                      onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                      required
+                      aria-required="true"
+                      aria-label="Teléfono"
+                    />
+                  </div>
+                </div>
+              )}
+
               {selectedRole === "ADMIN" && (
                 <div className="space-y-2">
                   <Label htmlFor="claveAdmin">Clave de Administrador</Label>
@@ -419,6 +461,31 @@ export default function Registro() {
                   </div>
                   <p id="clave-admin-help" className="text-xs text-muted-foreground">
                     Solo usuarios autorizados pueden crear cuentas de administrador
+                  </p>
+                </div>
+              )}
+
+              {/* Código de verificación para roles profesionales */}
+              {selectedRole && ['MEDICO', 'RECEPCIONISTA', 'CUIDADOR', 'ADMIN'].includes(selectedRole) && (
+                <div className="space-y-2">
+                  <Label htmlFor="codigoVerificacion">Código de Verificación</Label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="codigoVerificacion"
+                      type="password"
+                      placeholder="Código institucional"
+                      className="pl-10"
+                      value={formData.codigoVerificacion}
+                      onChange={(e) => setFormData({ ...formData, codigoVerificacion: e.target.value })}
+                      required
+                      aria-required="true"
+                      aria-label="Código de verificación"
+                      aria-describedby="codigo-verificacion-help"
+                    />
+                  </div>
+                  <p id="codigo-verificacion-help" className="text-xs text-muted-foreground">
+                    Código institucional requerido para personal médico y administrativo
                   </p>
                 </div>
               )}
