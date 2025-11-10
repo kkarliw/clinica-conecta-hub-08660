@@ -1,20 +1,31 @@
 export interface Paciente {
   id?: number;
   nombre: string;
-  edad: number;
-  correo: string;
+  apellido?: string;
+  edad?: number;
+  correo?: string;
+  email?: string;
   telefono: string;
   direccion: string;
   documento?: string;
+  numeroDocumento?: string;
+  fechaNacimiento?: string;
+  genero?: string;
   estadoActivo?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ProfesionalSalud {
   id?: number;
   nombre: string;
+  apellido?: string;
+  tipoProfesional?: string;
   especialidad: string;
-  correo: string;
+  correo?: string;
+  email?: string;
   telefono: string;
+  numeroLicencia?: string;
   consultorioId?: number;
   consultorioNumero?: string;
   consultorioUbicacion?: string;
@@ -22,11 +33,14 @@ export interface ProfesionalSalud {
 
 export interface CitaMedica {
   id?: number;
-  pacienteId: number;
-  profesionalId: number;
+  pacienteId?: number;
+  profesionalId?: number;
+  paciente?: Paciente;
+  profesional?: ProfesionalSalud;
+  consultorio?: Consultorio;
   fecha: string;
   motivo: string;
-  estado?: 'pendiente' | 'confirmada' | 'completada' | 'cancelada';
+  estado?: 'PENDIENTE' | 'CONFIRMADA' | 'COMPLETADA' | 'CANCELADA' | 'pendiente' | 'confirmada' | 'completada' | 'cancelada';
   pacienteNombre?: string;
   profesionalNombre?: string;
   notas?: string;
@@ -70,7 +84,8 @@ export interface Usuario {
   id: number;
   nombre: string;
   apellido?: string;
-  correo: string;
+  correo?: string;
+  email?: string;
   rol: 'PACIENTE' | 'MEDICO' | 'RECEPCIONISTA' | 'ADMIN' | 'CUIDADOR';
   verificado: boolean;
   especialidad?: string;
@@ -82,7 +97,8 @@ export interface Cuidador {
   id: number;
   nombre: string;
   apellido?: string;
-  correo: string;
+  correo?: string;
+  email?: string;
   telefono: string;
   numeroDocumento?: string;
 }
@@ -120,21 +136,28 @@ export interface Acompanamiento {
 }
 
 export interface ReporteDiario {
-  id: number;
+  id?: number;
   pacienteId: number;
   cuidadorId: number;
   fecha: string;
-  resumenDia: string;
-  medicamentosTomados: boolean;
+  estadoGeneral?: string;
+  alimentacion?: string;
+  hidratacion?: string;
+  sueno?: string;
+  movilidad?: string;
+  estadoEmocional: 'EXCELENTE' | 'BIEN' | 'REGULAR' | 'MAL' | 'CRITICO' | 'Excelente' | 'Bien' | 'Regular' | 'Mal' | 'Crítico';
+  medicamentosAdministrados?: string;
+  incidentes?: string;
+  observaciones?: string;
+  pacienteNombre?: string;
+  resumenDia?: string;
+  medicamentosTomados?: boolean;
   signosVitales?: {
     presionArterial?: string;
     frecuenciaCardiaca?: number;
     temperatura?: number;
     saturacionOxigeno?: number;
   };
-  estadoEmocional: 'EXCELENTE' | 'BIEN' | 'REGULAR' | 'MAL' | 'CRITICO';
-  observaciones?: string;
-  pacienteNombre?: string;
 }
 
 export interface Autorizacion {
@@ -164,3 +187,38 @@ export interface Consultorio {
   numeroSala: string;
   ubicacion: string;
 }
+
+export interface SignosVitales {
+  id?: number;
+  pacienteId?: number;
+  temperatura?: number;
+  presionSistolica?: number;
+  presionDiastolica?: number;
+  frecuenciaCardiaca?: number;
+  frecuenciaRespiratoria?: number;
+  saturacionOxigeno?: number;
+  peso?: number;
+  altura?: number;
+  observaciones?: string;
+  fechaRegistro: string;
+}
+
+export interface Vacuna {
+  id?: number;
+  pacienteId?: number;
+  nombreVacuna: string;
+  fechaAplicacion?: string;
+  proximaDosis?: string;
+  dosis?: string;
+  estado: 'APLICADA' | 'PENDIENTE' | 'PROXIMA';
+  observaciones?: string;
+}
+
+export interface PanelSalud {
+  paciente?: Paciente;
+  ultimosSignosVitales?: SignosVitales;
+  vacunasPendientes?: Vacuna[];
+  historialSignosVitales?: SignosVitales[];
+  todasVacunas?: Vacuna[];
+}
+

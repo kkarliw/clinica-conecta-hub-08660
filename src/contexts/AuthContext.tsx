@@ -47,16 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (correo: string, password: string) => {
     try {
-      // Backend Java Spark espera { email, password }
       const response = await api.post('/auth/login', { 
         email: correo, 
         password 
       });
       
-      // Backend devuelve { token, id, nombre, email, rol }
       const { token: newToken, id, nombre, email, rol } = response.data;
       
-      // Construir objeto user compatible con el frontend
       const newUser: User = {
         id,
         nombre,
@@ -95,28 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error('Error en login:', error);
-      
-      if (error.response) {
-        const status = error.response.status;
-        const serverMessage = error.response.data?.message || error.response.data?.error;
-        
-        switch (status) {
-          case 401:
-            throw new Error(serverMessage || 'Credenciales incorrectas. Por favor verifica tu correo y contraseña.');
-          case 403:
-            throw new Error(serverMessage || 'Acceso denegado. Tu cuenta puede estar inactiva o sin permisos.');
-          case 404:
-            throw new Error(serverMessage || 'Usuario no encontrado. Verifica tu correo electrónico.');
-          case 400:
-            throw new Error(serverMessage || 'Datos de inicio de sesión inválidos. Verifica los campos.');
-          default:
-            throw new Error(serverMessage || 'Error al iniciar sesión. Inténtalo de nuevo.');
-        }
-      } else if (error.request) {
-        throw new Error('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
-      } else {
-        throw new Error('Error inesperado. Por favor intenta de nuevo.');
-      }
+      const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Credenciales incorrectas';
+      throw new Error(errorMsg);
     }
   };
 
