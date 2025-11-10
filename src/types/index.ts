@@ -12,6 +12,7 @@ export interface Paciente {
 export interface ProfesionalSalud {
   id?: number;
   nombre: string;
+  apellido?: string;
   especialidad: string;
   correo: string;
   telefono: string;
@@ -27,6 +28,15 @@ export interface CitaMedica {
   pacienteNombre?: string;
   profesionalNombre?: string;
   notas?: string;
+  profesional?: {
+    nombre?: string;
+    apellido?: string;
+    especialidad?: string;
+  };
+  paciente?: {
+    nombre?: string;
+    apellido?: string;
+  };
 }
 
 export interface HistoriaClinica {

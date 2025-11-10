@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,47 +10,34 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
+import { getCitasPaciente } from '@/lib/api';
+import { useState } from 'react';
 
 interface Cita {
   id: number;
   fecha: string;
   motivo: string;
   estado: string;
-  profesionalNombre: string;
-  profesionalEspecialidad?: string;
+  profesional?: {
+    nombre?: string;
+    apellido?: string;
+    especialidad?: string;
+  };
 }
 
 export default function PatientAppointments() {
-  const [citas, setCitas] = useState<Cita[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('proximas');
   const navigate = useNavigate();
+  
+  const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
+  const pacienteId = user.id || 0;
 
-  useEffect(() => {
-    fetchCitas();
-  }, []);
-
-  const fetchCitas = async () => {
-    try {
-      const token = localStorage.getItem('healix_token');
-      const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
-      
-      const response = await fetch(`http://localhost:4567/api/citas/paciente/${user.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setCitas(data);
-      }
-    } catch (error) {
-      console.error('Error al cargar citas:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: citas = [], isLoading } = useQuery({
+    queryKey: ['citas-paciente', pacienteId],
+    queryFn: () => getCitasPaciente(pacienteId),
+    enabled: pacienteId > 0,
+  });
 
   const getEstadoBadge = (estado: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
@@ -79,7 +65,7 @@ export default function PatientAppointments() {
 
   const filteredCitas = getFilteredCitas();
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingState message="Cargando tus citas..." />;
   }
 
@@ -89,11 +75,11 @@ export default function PatientAppointments() {
         title="Mis Citas"
         description="Gestiona tus citas médicas"
         breadcrumbs={[
-          { label: 'Dashboard', href: '/patient/dashboard' },
+          { label: 'Dashboard', href: '/paciente/dashboard' },
           { label: 'Citas' }
         ]}
         actions={
-          <Button onClick={() => navigate('/patient/appointments/new')} className="gap-2">
+          <Button onClick={() => navigate('/paciente/nueva-cita')} className="gap-2">
             <Plus className="w-4 h-4" />
             Nueva Cita
           </Button>
@@ -115,7 +101,7 @@ export default function PatientAppointments() {
               description={`No tienes citas ${activeTab} registradas.`}
               action={{
                 label: 'Agendar cita',
-                onClick: () => navigate('/patient/appointments/new')
+                onClick: () => navigate('/paciente/nueva-cita')
               }}
             />
           ) : (
@@ -146,11 +132,13 @@ export default function PatientAppointments() {
                           <h3 className="font-semibold text-lg mb-2">{cita.motivo}</h3>
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <User className="w-4 h-4" />
-                            <span>{cita.profesionalNombre}</span>
-                            {cita.profesionalEspecialidad && (
+                            <span>
+                              {cita.profesional?.nombre} {cita.profesional?.apellido}
+                            </span>
+                            {cita.profesional?.especialidad && (
                               <>
                                 <span>•</span>
-                                <span className="text-sm">{cita.profesionalEspecialidad}</span>
+                                <span className="text-sm">{cita.profesional.especialidad}</span>
                               </>
                             )}
                           </div>

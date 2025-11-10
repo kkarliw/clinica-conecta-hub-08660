@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,92 +8,68 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getProfesionales, createCita } from '@/lib/api';
 
 interface Profesional {
   id: number;
   nombre: string;
+  apellido: string;
   especialidad: string;
 }
 
 export default function NewAppointment() {
-  const [profesionales, setProfesionales] = useState<Profesional[]>([]);
   const [formData, setFormData] = useState({
     profesionalId: '',
     fechaHora: '',
     motivo: '',
   });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchProfesionales();
-  }, []);
+  const { data: profesionales = [] } = useQuery({
+    queryKey: ['profesionales'],
+    queryFn: getProfesionales,
+  });
 
-  const fetchProfesionales = async () => {
-    try {
-      const token = localStorage.getItem('healix_token');
-      const response = await fetch('http://localhost:4567/api/profesionales', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+  const createCitaMutation = useMutation({
+    mutationFn: createCita,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['citas-paciente'] });
+      toast({
+        title: 'Cita creada',
+        description: 'Tu solicitud de cita ha sido registrada exitosamente',
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setProfesionales(data);
-      }
-    } catch (error) {
-      console.error('Error al cargar profesionales:', error);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem('healix_token');
-      const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
-      
-      const response = await fetch('http://localhost:4567/api/citas', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          pacienteId: user.id,
-          profesionalId: parseInt(formData.profesionalId),
-          fechaHora: formData.fechaHora,
-          motivo: formData.motivo,
-        }),
-      });
-
-      if (response.ok) {
-        toast({
-          title: 'Cita creada',
-          description: 'Tu solicitud de cita ha sido registrada exitosamente',
-        });
-        navigate('/patient/appointments');
-      } else {
-        throw new Error('Error al crear la cita');
-      }
-    } catch (error) {
+      navigate('/paciente/citas');
+    },
+    onError: () => {
       toast({
         title: 'Error',
         description: 'No se pudo crear la cita. Intenta nuevamente.',
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const user = JSON.parse(localStorage.getItem('healix_user') || '{}');
+    
+    createCitaMutation.mutate({
+      pacienteId: user.id,
+      profesionalId: parseInt(formData.profesionalId),
+      fecha: formData.fechaHora,
+      motivo: formData.motivo,
+      estado: 'PENDIENTE',
+    });
   };
 
   return (
     <div className="container mx-auto py-6 max-w-2xl">
       <Button 
         variant="ghost" 
-        onClick={() => navigate('/patient/appointments')}
+        onClick={() => navigate('/paciente/citas')}
         className="mb-4"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -117,7 +93,7 @@ export default function NewAppointment() {
               <SelectContent>
                 {profesionales.map((prof) => (
                   <SelectItem key={prof.id} value={prof.id.toString()}>
-                    {prof.nombre} - {prof.especialidad}
+                    {prof.nombre} {prof.apellido} - {prof.especialidad}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -147,8 +123,8 @@ export default function NewAppointment() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creando...' : 'Solicitar Cita'}
+          <Button type="submit" className="w-full" disabled={createCitaMutation.isPending}>
+            {createCitaMutation.isPending ? 'Creando...' : 'Solicitar Cita'}
           </Button>
         </form>
       </Card>
