@@ -156,7 +156,7 @@ export default function CuidadorCitas() {
                     <SelectContent>
                       {profesionales.map((prof: any) => (
                         <SelectItem key={prof.id} value={prof.id.toString()}>
-                          {prof.nombre} - {prof.especialidad}
+                          {prof.nombre} {prof.apellido} - {prof.especialidad}
                         </SelectItem>
                       ))}
                     </SelectContent>

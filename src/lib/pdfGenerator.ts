@@ -112,37 +112,32 @@ export const generateHistoriaPDF = (
   yPos += tratamientoLines.length * 7 + 5;
 
   // Receta médica
-  if (historia.recetaMedica) {
+  if (historia.formulaMedica) {
     if (yPos > 240) {
       doc.addPage();
       yPos = 20;
     }
     
     doc.setFont(undefined, 'bold');
-    doc.text('Receta Médica', 20, yPos);
+    doc.text('Fórmula Médica', 20, yPos);
     
     yPos += 8;
     doc.setFont(undefined, 'normal');
-    const recetaLines = doc.splitTextToSize(historia.recetaMedica, pageWidth - 40);
+    const recetaLines = doc.splitTextToSize(historia.formulaMedica, pageWidth - 40);
     doc.text(recetaLines, 20, yPos);
     yPos += recetaLines.length * 7 + 5;
   }
 
   // Incapacidad
-  if (historia.incapacidad) {
+  if (historia.requiereIncapacidad) {
     if (yPos > 240) {
       doc.addPage();
       yPos = 20;
     }
     
     doc.setFont(undefined, 'bold');
-    doc.text('Incapacidad', 20, yPos);
-    
+    doc.text('Requiere Incapacidad: Sí', 20, yPos);
     yPos += 8;
-    doc.setFont(undefined, 'normal');
-    const incapacidadLines = doc.splitTextToSize(historia.incapacidad, pageWidth - 40);
-    doc.text(incapacidadLines, 20, yPos);
-    yPos += incapacidadLines.length * 7 + 5;
   }
 
   // Observaciones

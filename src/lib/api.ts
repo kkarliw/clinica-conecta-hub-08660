@@ -131,7 +131,14 @@ export const getCitasMedico = async (medicoId: number): Promise<CitaMedica[]> =>
 };
 
 export const createCita = async (cita: any): Promise<CitaMedica> => {
-  const response = await api.post<CitaMedica>('/citas', cita);
+  // Convertir fecha a formato ISO completo si es necesario
+  const citaData = {
+    ...cita,
+    fecha: cita.fecha || cita.fechaHora,
+  };
+  delete citaData.fechaHora;
+  
+  const response = await api.post<CitaMedica>('/citas', citaData);
   return response.data;
 };
 
@@ -187,8 +194,28 @@ export const getHistoriasClinicasPaciente = async (pacienteId: number): Promise<
 };
 
 export const createHistoriaClinica = async (historia: any): Promise<any> => {
-  const response = await api.post<any>('/historias', historia);
+  const historiaData = {
+    pacienteId: historia.pacienteId,
+    profesionalId: historia.profesionalId,
+    fecha: historia.fecha,
+    motivoConsulta: historia.motivoConsulta,
+    diagnostico: historia.diagnostico,
+    tratamiento: historia.tratamiento,
+    observaciones: historia.observaciones,
+    formulaMedica: historia.formulaMedica,
+    requiereIncapacidad: historia.requiereIncapacidad || false
+  };
+  const response = await api.post<any>('/historias', historiaData);
   return response.data;
+};
+
+export const updateHistoriaClinica = async (id: number, historia: any): Promise<any> => {
+  const response = await api.put<any>(`/historias/${id}`, historia);
+  return response.data;
+};
+
+export const deleteHistoriaClinica = async (id: number): Promise<void> => {
+  await api.delete(`/historias/${id}`);
 };
 
 // Incapacidad PDF
@@ -217,6 +244,65 @@ export const getEstadisticasMedico = async (medicoId: number): Promise<any> => {
 // ============================================
 export const getPanelSaludPaciente = async (pacienteId: number): Promise<any> => {
   const response = await api.get(`/pacientes/${pacienteId}/panel-salud`);
+  return response.data;
+};
+
+// ============================================
+// SIGNOS VITALES
+// ============================================
+export const getSignosVitalesPorPaciente = async (pacienteId: number): Promise<any[]> => {
+  const response = await api.get<any[]>(`/pacientes/${pacienteId}/signos-vitales`);
+  return response.data;
+};
+
+export const getUltimoSignoVital = async (pacienteId: number): Promise<any> => {
+  const response = await api.get<any>(`/pacientes/${pacienteId}/signos-vitales/ultimo`);
+  return response.data;
+};
+
+export const createSignoVital = async (pacienteId: number, data: any): Promise<any> => {
+  const response = await api.post<any>(`/pacientes/${pacienteId}/signos-vitales`, data);
+  return response.data;
+};
+
+// ============================================
+// VACUNAS
+// ============================================
+export const getVacunasPorPaciente = async (pacienteId: number): Promise<any[]> => {
+  const response = await api.get<any[]>(`/pacientes/${pacienteId}/vacunas`);
+  return response.data;
+};
+
+export const getVacunasPendientes = async (pacienteId: number): Promise<any[]> => {
+  const response = await api.get<any[]>(`/pacientes/${pacienteId}/vacunas/pendientes`);
+  return response.data;
+};
+
+export const createVacuna = async (pacienteId: number, data: any): Promise<any> => {
+  const response = await api.post<any>(`/pacientes/${pacienteId}/vacunas`, data);
+  return response.data;
+};
+
+export const updateVacuna = async (pacienteId: number, vacunaId: number, data: any): Promise<any> => {
+  const response = await api.put<any>(`/pacientes/${pacienteId}/vacunas/${vacunaId}`, data);
+  return response.data;
+};
+
+// ============================================
+// NOTIFICACIONES
+// ============================================
+export const getNotificaciones = async (usuarioId: number): Promise<any[]> => {
+  const response = await api.get<any[]>(`/notificaciones/${usuarioId}`);
+  return response.data;
+};
+
+export const marcarNotificacionLeida = async (notificacionId: number): Promise<any> => {
+  const response = await api.put<any>(`/notificaciones/${notificacionId}/leer`);
+  return response.data;
+};
+
+export const createNotificacion = async (data: any): Promise<any> => {
+  const response = await api.post<any>('/notificaciones', data);
   return response.data;
 };
 

@@ -23,8 +23,8 @@ export default function HistoriaClinicaForm({ isOpen, onClose, onSubmit, isLoadi
     diagnostico: "",
     tratamiento: "",
     observaciones: "",
-    incapacidad: "",
-    recetaMedica: ""
+    formulaMedica: "",
+    requiereIncapacidad: false
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,8 +36,8 @@ export default function HistoriaClinicaForm({ isOpen, onClose, onSubmit, isLoadi
       diagnostico: "",
       tratamiento: "",
       observaciones: "",
-      incapacidad: "",
-      recetaMedica: ""
+      formulaMedica: "",
+      requiereIncapacidad: false
     });
   };
 
@@ -61,7 +61,7 @@ export default function HistoriaClinicaForm({ isOpen, onClose, onSubmit, isLoadi
                 <SelectContent>
                   {pacientes.map((p) => (
                     <SelectItem key={p.id} value={p.id!.toString()}>
-                      {p.nombre}
+                      {p.nombre} {p.apellido}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -80,7 +80,7 @@ export default function HistoriaClinicaForm({ isOpen, onClose, onSubmit, isLoadi
                 <SelectContent>
                   {profesionales.map((p) => (
                     <SelectItem key={p.id} value={p.id!.toString()}>
-                      {p.nombre} - {p.especialidad}
+                      {p.nombre} {p.apellido} - {p.especialidad}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -136,25 +136,30 @@ export default function HistoriaClinicaForm({ isOpen, onClose, onSubmit, isLoadi
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="recetaMedica">Receta Médica</Label>
+            <Label htmlFor="formulaMedica">Fórmula Médica</Label>
             <Textarea
-              id="recetaMedica"
+              id="formulaMedica"
               placeholder="Medicamentos recetados y dosificación"
-              value={formData.recetaMedica}
-              onChange={(e) => setFormData({ ...formData, recetaMedica: e.target.value })}
+              value={formData.formulaMedica}
+              onChange={(e) => setFormData({ ...formData, formulaMedica: e.target.value })}
               rows={4}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="incapacidad">Incapacidad</Label>
-            <Textarea
-              id="incapacidad"
-              placeholder="Días de incapacidad y justificación"
-              value={formData.incapacidad}
-              onChange={(e) => setFormData({ ...formData, incapacidad: e.target.value })}
-              rows={2}
-            />
+            <Label htmlFor="requiereIncapacidad">¿Requiere Incapacidad?</Label>
+            <Select 
+              value={formData.requiereIncapacidad ? "true" : "false"}
+              onValueChange={(value) => setFormData({ ...formData, requiereIncapacidad: value === "true" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Sí</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

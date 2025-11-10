@@ -71,7 +71,7 @@ export default function CitaForm({ isOpen, onClose, onSubmit, isLoading, pacient
               <SelectContent>
                 {pacientes.map((paciente) => (
                   <SelectItem key={paciente.id} value={paciente.id!.toString()}>
-                    {paciente.nombre}
+                    {paciente.nombre} {paciente.apellido}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -91,7 +91,7 @@ export default function CitaForm({ isOpen, onClose, onSubmit, isLoading, pacient
               <SelectContent>
                 {profesionales.map((profesional) => (
                   <SelectItem key={profesional.id} value={profesional.id!.toString()}>
-                    {profesional.nombre} - {profesional.especialidad}
+                    {profesional.nombre} {profesional.apellido} - {profesional.especialidad}
                   </SelectItem>
                 ))}
               </SelectContent>

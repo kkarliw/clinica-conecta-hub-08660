@@ -50,8 +50,8 @@ export interface HistoriaClinica {
   diagnostico: string;
   tratamiento: string;
   observaciones?: string;
-  incapacidad?: string;
-  recetaMedica?: string;
+  formulaMedica?: string;
+  requiereIncapacidad?: boolean;
   pacienteNombre?: string;
   profesionalNombre?: string;
 }
