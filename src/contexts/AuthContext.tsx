@@ -47,35 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (correo: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { 
-        email: correo, 
-        password 
-      });
+      const response = await api.post('/auth/login', { email: correo, password });
+      // El backend devuelve { token, rol, nombre, id } directamente
+      const { token: newToken, rol, nombre, id } = response.data;
       
-      const { token: newToken, id, nombre, email, rol } = response.data;
-
-      // Normalizar rol desde backend para evitar diferencias de formato
-      const rawRole = String(rol || '').trim().toUpperCase();
-      const cleaned = rawRole.replace(/^ROLE_/, '');
-      const mappedRole: UserRole =
-        cleaned === 'DOCTOR' ? 'MEDICO' :
-        cleaned === 'MEDICO' ? 'MEDICO' :
-        cleaned === 'RECEPCION' ? 'RECEPCIONISTA' :
-        cleaned === 'RECEPCIONISTA' ? 'RECEPCIONISTA' :
-        cleaned === 'RECEPTIONIST' ? 'RECEPCIONISTA' :
-        cleaned === 'ADMINISTRADOR' ? 'ADMIN' :
-        cleaned === 'ADMIN' ? 'ADMIN' :
-        cleaned === 'CAREGIVER' ? 'CUIDADOR' :
-        cleaned === 'CUIDADOR' ? 'CUIDADOR' :
-        cleaned === 'PATIENT' ? 'PACIENTE' :
-        cleaned === 'PACIENTE' ? 'PACIENTE' :
-        'PACIENTE';
-
+      // Construir objeto user compatible con el frontend
       const newUser: User = {
-        id,
+        id: id || 0,
         nombre,
-        correo: email,
-        rol: mappedRole,
+        correo,
+        rol: rol as UserRole,
         verificado: true
       };
 
@@ -87,49 +68,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
-      // Redirigir según el rol
-      switch (mappedRole) {
+      switch (rol as UserRole) {
         case 'PACIENTE':
-          navigate('/paciente/dashboard', { replace: true });
+          navigate('/paciente/dashboard');
           break;
         case 'MEDICO':
-          navigate('/medico/dashboard', { replace: true });
+          navigate('/medico/dashboard');
           break;
         case 'RECEPCIONISTA':
-          navigate('/recepcion/dashboard', { replace: true });
+          navigate('/recepcion/dashboard');
           break;
         case 'CUIDADOR':
-          navigate('/cuidador/dashboard', { replace: true });
+          navigate('/cuidador/dashboard');
           break;
         case 'ADMIN':
-          navigate('/admin/dashboard', { replace: true });
+          navigate('/admin/dashboard');
           break;
         default:
-          navigate('/login', { replace: true });
+          navigate('/');
       }
     } catch (error: any) {
       console.error('Error en login:', error);
-      const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Credenciales incorrectas';
-      throw new Error(errorMsg);
+      
+      // Manejo de errores específicos con mensajes personalizados
+      if (error.response) {
+        const status = error.response.status;
+        const serverMessage = error.response.data?.message || error.response.data?.error;
+        
+        switch (status) {
+          case 401:
+            throw new Error(serverMessage || 'Credenciales incorrectas. Por favor verifica tu correo y contraseña.');
+          case 403:
+            throw new Error(serverMessage || 'Acceso denegado. Tu cuenta puede estar inactiva o sin permisos.');
+          case 404:
+            throw new Error(serverMessage || 'Usuario no encontrado. Verifica tu correo electrónico.');
+          case 400:
+            throw new Error(serverMessage || 'Datos de inicio de sesión inválidos. Verifica los campos.');
+          default:
+            throw new Error(serverMessage || 'Error al iniciar sesión. Inténtalo de nuevo.');
+        }
+      } else if (error.request) {
+        throw new Error('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
+      } else {
+        throw new Error('Error inesperado. Por favor intenta de nuevo.');
+      }
     }
   };
 
   const register = async (data: any) => {
     try {
-      // Backend Java Spark espera { nombre, email, password, rol }
+      // Mapear los campos del frontend al formato del backend
       const payload = {
         nombre: data.nombre,
-        email: data.correo,
+        apellido: data.apellido,
+        email: data.correo, // Mapear correo -> email
         password: data.password,
-        rol: data.rol
+        telefono: data.telefono,
+        rol: data.rol,
+        // Campos específicos por rol
+        especialidad: data.especialidad,
+        numeroLicencia: data.numeroLicencia,
+        campo: data.campo,
+        claveAdmin: data.claveAdmin
       };
 
       const response = await api.post('/auth/register', payload);
       
+      // El backend puede devolver diferentes respuestas
+      // Adaptarse según la implementación del backend
       return response.data;
     } catch (error: any) {
       console.error('Error en registro:', error);
       
+      // Manejo de errores específicos con mensajes personalizados
       if (error.response) {
         const status = error.response.status;
         const serverMessage = error.response.data?.message || error.response.data?.error;

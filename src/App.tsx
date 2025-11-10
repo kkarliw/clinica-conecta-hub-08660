@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import RequireRole from "@/components/RequireRole";
-import { NotificationListener } from "@/components/NotificationListener";
 import Layout from "@/components/Layout";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import DoctorLayout from "@/components/layouts/DoctorLayout";
@@ -20,7 +19,6 @@ import RecuperarPassword from "@/pages/RecuperarPassword";
 import Dashboard from "@/pages/Dashboard";
 import Pacientes from "@/pages/Pacientes";
 import Profesionales from "@/pages/Profesionales";
-import Consultorios from "@/pages/Consultorios";
 import Citas from "@/pages/Citas";
 import HistoriasClinicas from "@/pages/HistoriasClinicas";
 import DoctorDashboard from "@/pages/doctor/DoctorDashboard";
@@ -35,7 +33,7 @@ import PatientDashboard from "@/pages/patient/PatientDashboard";
 import PatientAppointments from "@/pages/patient/PatientAppointments";
 import NewAppointment from "@/pages/patient/NewAppointment";
 import PatientHistory from "@/pages/patient/PatientHistory";
-import PatientHealthComplete from "@/pages/patient/PatientHealthComplete";
+import PatientHealth from "@/pages/patient/PatientHealth";
 import PatientProfile from "@/pages/patient/PatientProfile";
 import CuidadorDashboard from "@/pages/cuidador/CuidadorDashboard";
 import CuidadorPatients from "@/pages/cuidador/CuidadorPacientes";
@@ -70,7 +68,6 @@ const App = () => (
       <Sonner position="top-right" />
       <BrowserRouter>
         <AuthProvider>
-          <NotificationListener />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
@@ -100,11 +97,6 @@ const App = () => (
                 <AdminLayout><Citas /></AdminLayout>
               </RequireRole>
             } />
-            <Route path="/admin/consultorios" element={
-              <RequireRole role="ADMIN">
-                <AdminLayout><Consultorios /></AdminLayout>
-              </RequireRole>
-            } />
             <Route path="/admin/historias" element={
               <RequireRole role="ADMIN">
                 <AdminLayout><HistoriasClinicas /></AdminLayout>
@@ -130,11 +122,6 @@ const App = () => (
             <Route path="/recepcion/pacientes" element={
               <RequireRole role="RECEPCIONISTA">
                 <RecepcionistaLayout><RecepcionistaPacientes /></RecepcionistaLayout>
-              </RequireRole>
-            } />
-            <Route path="/recepcion/consultorios" element={
-              <RequireRole role="RECEPCIONISTA">
-                <RecepcionistaLayout><Consultorios /></RecepcionistaLayout>
               </RequireRole>
             } />
             <Route path="/recepcion/perfil" element={
@@ -208,7 +195,7 @@ const App = () => (
             } />
             <Route path="/paciente/salud" element={
               <RequireRole role="PACIENTE">
-                <PatientLayout><PatientHealthComplete /></PatientLayout>
+                <PatientLayout><PatientHealth /></PatientLayout>
               </RequireRole>
             } />
             <Route path="/paciente/perfil" element={

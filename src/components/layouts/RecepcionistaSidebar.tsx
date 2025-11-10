@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, Settings, LogOut, Building2 } from "lucide-react";
+import { Home, Calendar, Users, Settings, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ export default function RecepcionistaSidebar() {
     { icon: Home, label: "Panel Principal", path: "/recepcion/dashboard" },
     { icon: Calendar, label: "Citas", path: "/recepcion/citas" },
     { icon: Users, label: "Pacientes", path: "/recepcion/pacientes" },
-    { icon: Building2, label: "Consultorios", path: "/recepcion/consultorios" },
     { icon: Settings, label: "Configuración", path: "/recepcion/perfil" },
   ];
 

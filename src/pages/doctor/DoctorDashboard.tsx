@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Users, FileText, Clock, Activity, TrendingUp, AlertCircle, Building2, MapPin } from "lucide-react";
+import { Calendar, Users, FileText, Clock, Activity, TrendingUp, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCitasMedico, getPacientes, getHistoriasClinicas, getEstadisticasMedico, getProfesionales } from "@/lib/api";
+import { getCitasMedico, getPacientes, getHistoriasClinicas, getEstadisticasMedico } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import type { CitaMedica } from "@/types";
@@ -38,13 +37,6 @@ export default function DoctorDashboard() {
     queryKey: ["historias"],
     queryFn: getHistoriasClinicas,
   });
-
-  const { data: profesionales = [] } = useQuery({
-    queryKey: ["profesionales"],
-    queryFn: getProfesionales,
-  });
-
-  const medicoData = profesionales.find((p) => p.correo === user?.correo);
 
   const citasHoy = citas.filter((cita: CitaMedica) => {
     const today = new Date().toISOString().split('T')[0];
@@ -93,7 +85,7 @@ export default function DoctorDashboard() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Hola, Dr. {user?.nombre}</h1>
+          <h1 className="text-3xl font-bold text-foreground">Bienvenido, Dr. {user?.nombre}</h1>
           <p className="text-muted-foreground mt-1">
             Panel de Control Médico - {new Date().toLocaleDateString('es-CO', { 
               weekday: 'long', 
@@ -103,21 +95,9 @@ export default function DoctorDashboard() {
             })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {medicoData?.consultorioNumero && (
-            <Alert className="py-2 px-4">
-              <Building2 className="h-4 w-4" />
-              <AlertTitle className="text-sm font-semibold mb-0">Consultorio {medicoData.consultorioNumero}</AlertTitle>
-              <AlertDescription className="text-xs flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                {medicoData.consultorioUbicacion}
-              </AlertDescription>
-            </Alert>
-          )}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10">
-            <Activity className="w-5 h-5 text-primary animate-pulse" />
-            <span className="text-sm font-medium text-primary">En Línea</span>
-          </div>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10">
+          <Activity className="w-5 h-5 text-primary animate-pulse" />
+          <span className="text-sm font-medium text-primary">En Línea</span>
         </div>
       </div>
 
@@ -182,7 +162,7 @@ export default function DoctorDashboard() {
                 <Clock className="w-5 h-5 text-primary" />
                 Agenda del Día
               </CardTitle>
-              <Button size="sm" onClick={() => navigate("/medico/agenda")}>
+              <Button size="sm" onClick={() => navigate("/doctor/agenda")}>
                 Ver Agenda
               </Button>
             </div>
@@ -241,7 +221,7 @@ export default function DoctorDashboard() {
                   {citas.length > 0 ? Math.round((citasCompletadas.length / citas.length) * 100) : 0}%
                 </span>
               </div>
-              <Button className="w-full" variant="outline" onClick={() => navigate("/medico/pacientes")}>
+              <Button className="w-full" variant="outline" onClick={() => navigate("/doctor/patients")}>
                 <Users className="w-4 h-4 mr-2" />
                 Ver Todos los Pacientes
               </Button>

@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Paciente, ProfesionalSalud, CitaMedica } from '@/types';
 
 // Backend Java (Spark Framework) - Puerto 4567
-const API_BASE_URL = 'http://localhost:4567/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4567/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -85,16 +85,9 @@ export const buscarPacientePorDocumento = async (documento: string): Promise<Pac
   // TODO: Implementar en backend: GET /api/pacientes/buscar?documento=${documento}
 };
 
-// ============================================
-// PROFESIONALES - CRUD Completo
-// ============================================
+// Profesionales
 export const getProfesionales = async (): Promise<ProfesionalSalud[]> => {
   const response = await api.get<ProfesionalSalud[]>('/profesionales');
-  return response.data;
-};
-
-export const getProfesionalById = async (id: number): Promise<ProfesionalSalud> => {
-  const response = await api.get<ProfesionalSalud>(`/profesionales/${id}`);
   return response.data;
 };
 
@@ -108,12 +101,8 @@ export const updateProfesional = async (id: number, profesional: Partial<Profesi
   return response.data;
 };
 
-export const deleteProfesional = async (id: number): Promise<void> => {
-  await api.delete(`/profesionales/${id}`);
-};
-
 // ============================================
-// CITAS MÉDICAS - CRUD Completo
+// CITAS
 // ============================================
 export const getCitas = async (): Promise<CitaMedica[]> => {
   const response = await api.get<CitaMedica[]>('/citas');
@@ -149,17 +138,25 @@ export const deleteCita = async (id: number): Promise<void> => {
   await api.delete(`/citas/${id}`);
 };
 
+// ⚠️ FALTANTE EN BACKEND - Citas del día
 export const getCitasHoy = async (): Promise<CitaMedica[]> => {
+  // TEMPORAL: Filtrar en frontend
   const todasLasCitas = await getCitas();
   const hoy = new Date().toISOString().split('T')[0];
   return todasLasCitas.filter(cita => cita.fecha.startsWith(hoy));
+  // TODO: Implementar en backend: GET /api/citas/hoy
 };
 
+// ⚠️ FALTANTE EN BACKEND - Marcar llegada de paciente
 export const marcarLlegadaPaciente = async (citaId: number): Promise<CitaMedica> => {
-  return updateCita(citaId, { estado: 'CONFIRMADA' });
+  // TEMPORAL: Actualizar estado a "confirmada"
+  return updateCita(citaId, { estado: 'confirmada' });
+  // TODO: Implementar en backend: PUT /api/citas/:id/marcar-llegada
 };
 
+// ⚠️ FALTANTE EN BACKEND - Citas próximas
 export const getCitasProximas = async (dias: number = 7): Promise<CitaMedica[]> => {
+  // TEMPORAL: Filtrar en frontend
   const todasLasCitas = await getCitas();
   const hoy = new Date();
   const futuro = new Date();
@@ -169,38 +166,23 @@ export const getCitasProximas = async (dias: number = 7): Promise<CitaMedica[]> 
     const fechaCita = new Date(cita.fecha);
     return fechaCita >= hoy && fechaCita <= futuro;
   });
+  // TODO: Implementar en backend: GET /api/citas/proximas?dias=${dias}
 };
 
-// ============================================
-// HISTORIAS CLÍNICAS - CRUD Completo
-// ============================================
+// Historias Clínicas
 export const getHistoriasClinicas = async (): Promise<any[]> => {
-  const response = await api.get<any[]>('/historias');
-  return response.data;
-};
-
-export const getHistoriaById = async (id: number): Promise<any> => {
-  const response = await api.get<any>(`/historias/${id}`);
+  const response = await api.get<any[]>('/historias-clinicas');
   return response.data;
 };
 
 export const getHistoriasClinicasPaciente = async (pacienteId: number): Promise<any[]> => {
-  const response = await api.get<any[]>(`/historias/paciente/${pacienteId}`);
+  const response = await api.get<any[]>(`/historias-clinicas/paciente/${pacienteId}`);
   return response.data;
 };
 
 export const createHistoriaClinica = async (historia: any): Promise<any> => {
-  const response = await api.post<any>('/historias', historia);
+  const response = await api.post<any>('/historial', historia);
   return response.data;
-};
-
-export const updateHistoriaClinica = async (id: number, historia: any): Promise<any> => {
-  const response = await api.put<any>(`/historias/${id}`, historia);
-  return response.data;
-};
-
-export const deleteHistoriaClinica = async (id: number): Promise<void> => {
-  await api.delete(`/historias/${id}`);
 };
 
 // Incapacidad PDF
@@ -237,33 +219,6 @@ export const getUsuarioPerfil = async (usuarioId: number): Promise<any> => {
 export const updateUsuarioPerfil = async (usuarioId: number, data: any): Promise<any> => {
   // TODO: Implementar en backend: PUT /api/usuarios/:id
   throw new Error('Endpoint PUT /api/usuarios/:id no implementado en backend');
-};
-
-// ============================================
-// CONSULTORIOS
-// ============================================
-export const getConsultorios = async (): Promise<any[]> => {
-  const response = await api.get('/consultorios');
-  return response.data;
-};
-
-export const getConsultorioById = async (id: number): Promise<any> => {
-  const response = await api.get(`/consultorios/${id}`);
-  return response.data;
-};
-
-export const createConsultorio = async (consultorio: any): Promise<any> => {
-  const response = await api.post('/consultorios', consultorio);
-  return response.data;
-};
-
-export const updateConsultorio = async (id: number, consultorio: any): Promise<any> => {
-  const response = await api.put(`/consultorios/${id}`, consultorio);
-  return response.data;
-};
-
-export const deleteConsultorio = async (id: number): Promise<void> => {
-  await api.delete(`/consultorios/${id}`);
 };
 
 export default api;

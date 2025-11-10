@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Phone, ArrowLeft, Stethoscope, Heart, Shield, Briefcase, Users } from "lucide-react";
+import { User, Mail, Lock, Phone, ArrowLeft, Stethoscope, Heart, Shield, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import healixLogo from "@/assets/healix-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
-type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | "CUIDADOR" | null;
+type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | null;
 
 interface RoleCard {
   role: UserRole;
@@ -28,13 +28,6 @@ const roleCards: RoleCard[] = [
     description: "Accede a tu historial médico y agenda citas",
     icon: Heart,
     color: "from-secondary/20 to-secondary/5"
-  },
-  {
-    role: "CUIDADOR",
-    title: "Cuidador",
-    description: "Gestiona el cuidado y seguimiento de tus pacientes",
-    icon: Users,
-    color: "from-green-500/20 to-green-500/5"
   },
   {
     role: "MEDICO",
@@ -71,9 +64,9 @@ export default function Registro() {
     telefono: "",
     password: "",
     confirmPassword: "",
-    numeroDocumento: "",
-    numeroLicencia: "",
-    claveAdmin: ""
+    // Campos específicos por rol
+    numeroLicencia: "", // Médico
+    claveAdmin: "" // Admin
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -86,7 +79,6 @@ export default function Registro() {
       telefono: "",
       password: "",
       confirmPassword: "",
-      numeroDocumento: "",
       numeroLicencia: "",
       claveAdmin: ""
     });
@@ -112,12 +104,26 @@ export default function Registro() {
     setIsLoading(true);
 
     try {
-      const registroData = {
-        nombre: `${formData.nombre} ${formData.apellido}`.trim(),
+      // Preparar datos según el rol
+      const registroData: any = {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
         correo: formData.correo,
         password: formData.password,
         rol: selectedRole
       };
+
+      // Agregar campos específicos según el rol
+      if (selectedRole === "PACIENTE") {
+        registroData.telefono = formData.telefono;
+      } else if (selectedRole === "MEDICO") {
+        registroData.numeroLicencia = formData.numeroLicencia;
+        registroData.telefono = formData.telefono;
+      } else if (selectedRole === "RECEPCIONISTA") {
+        registroData.telefono = formData.telefono;
+      } else if (selectedRole === "ADMIN") {
+        registroData.claveAdmin = formData.claveAdmin;
+      }
 
       await register(registroData);
       
@@ -125,6 +131,7 @@ export default function Registro() {
         description: "Ya puedes iniciar sesión con tu cuenta" 
       });
       
+      // Redirigir automáticamente al login después del registro exitoso
       setTimeout(() => {
         navigate("/login");
       }, 1500);
@@ -138,13 +145,14 @@ export default function Registro() {
     }
   };
 
+  // Si no hay rol seleccionado, mostrar selección de roles
   if (!selectedRole) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary/10 flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-5xl"
+          className="w-full max-w-4xl"
         >
           <Link 
             to="/" 
@@ -161,7 +169,7 @@ export default function Registro() {
             <p className="text-muted-foreground">Selecciona el tipo de cuenta que deseas crear</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {roleCards.map((card, index) => (
               <motion.div
                 key={card.role}
@@ -213,6 +221,7 @@ export default function Registro() {
     );
   }
 
+  // Formulario según el rol seleccionado
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary/10 flex items-center justify-center p-4">
       <motion.div
@@ -250,34 +259,21 @@ export default function Registro() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Campos comunes */}
               <div className="space-y-2">
-                <Label htmlFor="nombre">Nombre</Label>
+                <Label htmlFor="nombre">Nombre completo</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="nombre"
                     type="text"
-                    placeholder="Juan"
+                    placeholder="Juan Pérez"
                     className="pl-10"
                     value={formData.nombre}
                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                     required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="apellido">Apellido</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="apellido"
-                    type="text"
-                    placeholder="Pérez"
-                    className="pl-10"
-                    value={formData.apellido}
-                    onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                    required
+                    aria-required="true"
+                    aria-label="Nombre completo"
                   />
                 </div>
               </div>
@@ -294,11 +290,34 @@ export default function Registro() {
                     value={formData.correo}
                     onChange={(e) => setFormData({ ...formData, correo: e.target.value })}
                     required
+                    aria-required="true"
+                    aria-label="Correo electrónico"
                   />
                 </div>
               </div>
 
-              {(selectedRole === "PACIENTE" || selectedRole === "CUIDADOR") && (
+
+              {/* Campo apellido común para todos */}
+              <div className="space-y-2">
+                <Label htmlFor="apellido">Apellido</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="apellido"
+                    type="text"
+                    placeholder="Pérez"
+                    className="pl-10"
+                    value={formData.apellido}
+                    onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
+                    required
+                    aria-required="true"
+                    aria-label="Apellido"
+                  />
+                </div>
+              </div>
+
+              {/* Campos específicos por rol */}
+              {selectedRole === "PACIENTE" && (
                 <div className="space-y-2">
                   <Label htmlFor="telefono">Teléfono</Label>
                   <div className="relative">
@@ -311,29 +330,100 @@ export default function Registro() {
                       value={formData.telefono}
                       onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                       required
+                      aria-required="true"
+                      aria-label="Teléfono"
                     />
                   </div>
                 </div>
               )}
 
-              {selectedRole === "CUIDADOR" && (
+              {selectedRole === "MEDICO" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefono">Teléfono</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="telefono"
+                        type="tel"
+                        placeholder="+57 300 123 4567"
+                        className="pl-10"
+                        value={formData.telefono}
+                        onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                        required
+                        aria-required="true"
+                        aria-label="Teléfono"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="numeroLicencia">Número de Licencia</Label>
+                    <div className="relative">
+                      <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="numeroLicencia"
+                        type="text"
+                        placeholder="Número de licencia médica"
+                        className="pl-10"
+                        value={formData.numeroLicencia}
+                        onChange={(e) => setFormData({ ...formData, numeroLicencia: e.target.value })}
+                        required
+                        aria-required="true"
+                        aria-label="Número de licencia"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Podrás configurar tu especialidad desde tu perfil después del registro
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {selectedRole === "RECEPCIONISTA" && (
                 <div className="space-y-2">
-                  <Label htmlFor="numeroDocumento">Número de Documento</Label>
+                  <Label htmlFor="telefono">Teléfono</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="numeroDocumento"
-                      type="text"
-                      placeholder="Cédula o documento de identidad"
+                      id="telefono"
+                      type="tel"
+                      placeholder="+57 300 123 4567"
                       className="pl-10"
-                      value={formData.numeroDocumento}
-                      onChange={(e) => setFormData({ ...formData, numeroDocumento: e.target.value })}
+                      value={formData.telefono}
+                      onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                       required
+                      aria-required="true"
+                      aria-label="Teléfono"
                     />
                   </div>
                 </div>
               )}
 
+              {selectedRole === "ADMIN" && (
+                <div className="space-y-2">
+                  <Label htmlFor="claveAdmin">Clave de Administrador</Label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="claveAdmin"
+                      type="password"
+                      placeholder="Clave especial de acceso"
+                      className="pl-10"
+                      value={formData.claveAdmin}
+                      onChange={(e) => setFormData({ ...formData, claveAdmin: e.target.value })}
+                      required
+                      aria-required="true"
+                      aria-label="Clave de administrador"
+                      aria-describedby="clave-admin-help"
+                    />
+                  </div>
+                  <p id="clave-admin-help" className="text-xs text-muted-foreground">
+                    Solo usuarios autorizados pueden crear cuentas de administrador
+                  </p>
+                </div>
+              )}
+
+              {/* Contraseñas */}
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
                 <div className="relative">
@@ -347,8 +437,14 @@ export default function Registro() {
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
                     minLength={8}
+                    aria-required="true"
+                    aria-label="Contraseña"
+                    aria-describedby="password-help"
                   />
                 </div>
+                <p id="password-help" className="text-xs text-muted-foreground">
+                  Debe tener al menos 8 caracteres
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -363,6 +459,8 @@ export default function Registro() {
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     required
+                    aria-required="true"
+                    aria-label="Confirmar contraseña"
                   />
                 </div>
               </div>
@@ -371,6 +469,7 @@ export default function Registro() {
                 type="submit" 
                 className="w-full" 
                 disabled={isLoading}
+                aria-busy={isLoading}
               >
                 {isLoading ? "Creando cuenta..." : "Crear cuenta"}
               </Button>

@@ -99,7 +99,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard Administrativo</h1>
         <p className="text-muted-foreground mt-2">
-          Hola, {user?.nombre}. Aquí tienes un resumen general del sistema.
+          Bienvenido, {user?.nombre}. Aquí tienes un resumen general del sistema.
         </p>
       </div>
 

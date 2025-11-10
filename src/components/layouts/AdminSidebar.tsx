@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Stethoscope, Calendar, FileText, BarChart, Settings, User, Building2 } from "lucide-react";
+import { LayoutDashboard, Users, Stethoscope, Calendar, FileText, BarChart, Settings, User } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import healixLogo from "@/assets/healix-logo.png";
@@ -19,7 +19,6 @@ const menuItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
   { title: "Pacientes", url: "/admin/pacientes", icon: Users },
   { title: "Profesionales", url: "/admin/profesionales", icon: Stethoscope },
-  { title: "Consultorios", url: "/admin/consultorios", icon: Building2 },
   { title: "Citas", url: "/admin/citas", icon: Calendar },
   { title: "Historias Clínicas", url: "/admin/historias", icon: FileText },
   { title: "Estadísticas", url: "/admin/estadisticas", icon: BarChart },

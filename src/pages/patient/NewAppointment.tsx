@@ -74,7 +74,7 @@ export default function NewAppointment() {
           title: 'Cita creada',
           description: 'Tu solicitud de cita ha sido registrada exitosamente',
         });
-        navigate('/paciente/citas');
+        navigate('/patient/appointments');
       } else {
         throw new Error('Error al crear la cita');
       }
@@ -93,7 +93,7 @@ export default function NewAppointment() {
     <div className="container mx-auto py-6 max-w-2xl">
       <Button 
         variant="ghost" 
-        onClick={() => navigate('/paciente/citas')}
+        onClick={() => navigate('/patient/appointments')}
         className="mb-4"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />

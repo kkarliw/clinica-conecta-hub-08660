@@ -72,7 +72,7 @@ export default function PatientDashboard() {
       <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
         <div>
           <h1 className={`font-bold text-foreground ${vistaSimplificada ? "text-4xl" : "text-3xl"}`}>
-            Hola, {user?.nombre}
+            ¡Hola, {user?.nombre}! 👋
           </h1>
           <p className={`text-muted-foreground mt-1 ${vistaSimplificada ? "text-lg" : ""}`}>
             Tu portal de salud personal
@@ -85,7 +85,7 @@ export default function PatientDashboard() {
           >
             {vistaSimplificada ? "Vista Normal" : "Vista Simplificada"}
           </Button>
-          <Button variant="outline" className="gap-2" onClick={() => navigate("/paciente/citas")}>
+          <Button variant="outline" className="gap-2" onClick={() => navigate("/patient/appointments")}>
             <Bell className="w-4 h-4" />
             {notificaciones.length > 0 && (
               <Badge variant="destructive" className="rounded-full px-2 py-0.5">
@@ -131,7 +131,7 @@ export default function PatientDashboard() {
               </div>
               <Button
                 className={vistaSimplificada ? "w-full text-lg py-6 mt-4" : "w-full mt-4"}
-                onClick={() => navigate("/paciente/citas")}
+                onClick={() => navigate("/patient/appointments")}
               >
                 Ver Detalles
               </Button>
@@ -180,7 +180,7 @@ export default function PatientDashboard() {
                 <Calendar className="w-5 h-5 text-primary" />
                 Mis Citas ({proximasCitas.length})
               </CardTitle>
-              <Button size="sm" onClick={() => navigate("/paciente/citas/nueva")}>Agendar Cita</Button>
+              <Button size="sm" onClick={() => navigate("/patient/appointments/new")}>Agendar Cita</Button>
             </div>
           </CardHeader>
           <CardContent>
