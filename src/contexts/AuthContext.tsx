@@ -54,36 +54,100 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const nombre = data.nombre ?? data.name ?? data.user?.nombre ?? data.user?.name ?? '';
       const emailResp = data.email ?? data.user?.email ?? correo;
 
-      // Detectar rol desde múltiples posibles campos
-      const backendRolRaw =
-        data.rol ??
-        data.role ??
-        data.user?.rol ??
-        data.user?.role ??
-        data.usuario?.rol ??
-        data.usuario?.role ??
-        '';
-
-      // Normalizar rol (quita acentos y pasa a mayúsculas)
-      const rawRole = String(backendRolRaw ?? '');
-      const normalizedRole = rawRole
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase();
+      // Detectar y normalizar rol desde múltiples posibles fuentes del backend
+      const normalize = (val: any) =>
+        String(val ?? '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toUpperCase()
+          .trim();
 
       const roleMap: Record<string, UserRole> = {
         'PACIENTE': 'PACIENTE',
         'PATIENT': 'PACIENTE',
+        'ROLE_PACIENTE': 'PACIENTE',
+        'ROLE_PATIENT': 'PACIENTE',
+
         'MEDICO': 'MEDICO',
         'DOCTOR': 'MEDICO',
+        'ROLE_MEDICO': 'MEDICO',
+        'ROLE_DOCTOR': 'MEDICO',
+
         'RECEPCIONISTA': 'RECEPCIONISTA',
         'RECEPCION': 'RECEPCIONISTA',
+        'RECEPTIONIST': 'RECEPCIONISTA',
+        'ROLE_RECEPCIONISTA': 'RECEPCIONISTA',
+        'ROLE_RECEPTIONIST': 'RECEPCIONISTA',
+
         'CUIDADOR': 'CUIDADOR',
         'CAREGIVER': 'CUIDADOR',
+        'ROLE_CUIDADOR': 'CUIDADOR',
+        'ROLE_CAREGIVER': 'CUIDADOR',
+
         'ADMIN': 'ADMIN',
         'ADMINISTRADOR': 'ADMIN',
+        'ADMINISTRATOR': 'ADMIN',
+        'ROLE_ADMIN': 'ADMIN',
+        'ROLE_ADMINISTRATOR': 'ADMIN',
       };
-      const mappedRole = roleMap[normalizedRole] || 'PACIENTE';
+
+      // 1) Candidatos string en distintas llaves
+      const stringCandidates: any[] = [
+        data.rol,
+        data.role,
+        data.perfil,
+        data.tipo,
+        data.tipoUsuario,
+        data.rolNombre,
+        data.usuario?.rol,
+        data.usuario?.role,
+        data.usuario?.perfil,
+        data.user?.rol,
+        data.user?.role,
+        data.user?.perfil,
+      ].filter(Boolean);
+
+      // 2) Authorities/roles como arrays (Spring Security / API variadas)
+      const authoritiesRaw =
+        data.authorities ?? data.user?.authorities ?? data.roles ?? data.user?.roles;
+      if (Array.isArray(authoritiesRaw)) {
+        for (const a of authoritiesRaw) {
+          const entry = typeof a === 'string' ? a : (a?.authority ?? a?.name ?? a?.rol ?? a?.role ?? '');
+          if (!entry) continue;
+          const key = normalize(String(entry).replace(/^ROLE_/i, 'ROLE_'));
+          if (roleMap[key]) stringCandidates.push(key);
+        }
+      }
+
+      // 3) IDs numéricos de rol
+      const roleId =
+        data.roleId ?? data.role_id ?? data.user?.roleId ?? data.user?.role_id ?? data.rolId ?? data.idRol;
+      let mappedFromId: UserRole | null = null;
+      if (typeof roleId === 'number') {
+        const idMap: Record<number, UserRole> = {
+          1: 'PACIENTE',
+          2: 'MEDICO',
+          3: 'RECEPCIONISTA',
+          4: 'CUIDADOR',
+          5: 'ADMIN',
+        };
+        mappedFromId = idMap[roleId] ?? null;
+      }
+
+      // Resolver rol final
+      let mappedRole: UserRole | null = null;
+      for (const candidate of stringCandidates) {
+        const key = normalize(candidate).replace(/^ROLE_/i, 'ROLE_');
+        if (roleMap[key]) {
+          mappedRole = roleMap[key];
+          break;
+        }
+      }
+      if (!mappedRole && mappedFromId) mappedRole = mappedFromId;
+
+      if (!mappedRole) {
+        throw new Error('No se pudo determinar tu rol desde la respuesta del servidor. Por favor intenta de nuevo o contacta al administrador.');
+      }
 
       // Construir objeto user compatible con el frontend
       const newUser: User = {
