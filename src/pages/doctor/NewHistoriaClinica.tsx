@@ -48,11 +48,10 @@ export default function NewHistoriaClinica() {
 
       if (response.status === 401) { window.location.href = '/login'; return; }
       if (response.status === 403) { toast({ title: 'Acceso denegado', description: 'No tienes permisos para crear historias', variant: 'destructive' }); return; }
+      
+      if (response.ok) {
         const historia = await response.json();
         
-        // (Incapacidad automática omitida: no hay endpoint en backend actual)
-
-
         // Actualizar estado de la cita
         if (citaId) {
           await fetch(`http://localhost:4567/api/citas/${citaId}`, {
