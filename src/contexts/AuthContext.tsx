@@ -47,11 +47,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (correo: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email: correo, password });
-      // Backend devuelve { token, id, nombre, email, rol }
-      const { token: newToken, id, nombre, email, rol: backendRol } = response.data;
+      // Backend puede devolver { token, id, nombre, email, rol } o variantes
+      const data = response.data || {};
+      const newToken = data.token || data.accessToken || data.jwt;
+      const id = data.id ?? data.user?.id ?? 0;
+      const nombre = data.nombre ?? data.name ?? data.user?.nombre ?? data.user?.name ?? '';
+      const emailResp = data.email ?? data.user?.email ?? correo;
+
+      // Detectar rol desde múltiples posibles campos
+      const backendRolRaw =
+        data.rol ??
+        data.role ??
+        data.user?.rol ??
+        data.user?.role ??
+        data.usuario?.rol ??
+        data.usuario?.role ??
+        '';
 
       // Normalizar rol (quita acentos y pasa a mayúsculas)
-      const rawRole = (backendRol ?? '').toString();
+      const rawRole = String(backendRolRaw ?? '');
       const normalizedRole = rawRole
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -75,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newUser: User = {
         id: id || 0,
         nombre,
-        correo: email || correo,
+        correo: emailResp,
         rol: mappedRole,
         verificado: true
       };
@@ -88,7 +102,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
-      // Redirigir según rol
+      // Redirección según la ruta intentada o el rol
+      const baseByRole: Record<UserRole, string> = {
+        PACIENTE: '/paciente',
+        MEDICO: '/medico',
+        RECEPCIONISTA: '/recepcion',
+        CUIDADOR: '/cuidador',
+        ADMIN: '/admin',
+      };
+
+      const intendedPath = localStorage.getItem('healix_intended_path');
+      if (intendedPath) {
+        localStorage.removeItem('healix_intended_path');
+        if (intendedPath.startsWith(baseByRole[mappedRole])) {
+          navigate(intendedPath, { replace: true });
+          return;
+        }
+      }
+
+      // Fallback: redirigir según rol
       switch (mappedRole) {
         case 'PACIENTE':
           navigate('/paciente/dashboard');
