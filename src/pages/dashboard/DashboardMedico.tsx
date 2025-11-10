@@ -28,7 +28,7 @@ export default function DashboardMedico() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/doctor/agenda")}
+            onClick={() => navigate("/medico/agenda")}
             role="button"
             tabIndex={0}
             aria-label="Ver agenda"
@@ -44,7 +44,7 @@ export default function DashboardMedico() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/doctor/patients")}
+            onClick={() => navigate("/medico/pacientes")}
             role="button"
             tabIndex={0}
             aria-label="Ver pacientes"
@@ -60,7 +60,7 @@ export default function DashboardMedico() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/doctor/prescriptions")}
+            onClick={() => navigate("/medico/formulas")}
             role="button"
             tabIndex={0}
             aria-label="Ver prescripciones"
@@ -76,7 +76,7 @@ export default function DashboardMedico() {
 
           <Card 
             className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-            onClick={() => navigate("/doctor/profile")}
+            onClick={() => navigate("/medico/perfil")}
             role="button"
             tabIndex={0}
             aria-label="Ver perfil"

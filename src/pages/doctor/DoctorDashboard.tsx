@@ -144,7 +144,7 @@ export default function DoctorDashboard() {
                     <p className="font-medium text-foreground">{cita.pacienteNombre}</p>
                     <p className="text-sm text-muted-foreground">{new Date(cita.fecha).toLocaleString('es-CO')}</p>
                   </div>
-                  <Button size="sm" onClick={() => navigate(`/doctor/agenda`)}>
+                  <Button size="sm" onClick={() => navigate(`/medico/agenda`)}>
                     Revisar
                   </Button>
                 </div>
@@ -162,7 +162,7 @@ export default function DoctorDashboard() {
                 <Clock className="w-5 h-5 text-primary" />
                 Agenda del Día
               </CardTitle>
-              <Button size="sm" onClick={() => navigate("/doctor/agenda")}>
+              <Button size="sm" onClick={() => navigate("/medico/agenda")}>
                 Ver Agenda
               </Button>
             </div>

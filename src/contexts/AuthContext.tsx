@@ -50,8 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Backend devuelve { token, id, nombre, email, rol }
       const { token: newToken, id, nombre, email, rol: backendRol } = response.data;
 
-      // Normalizar rol
-      const rawRole = (backendRol || '').toString().toUpperCase();
+      // Normalizar rol (quita acentos y pasa a mayúsculas)
+      const rawRole = (backendRol ?? '').toString();
+      const normalizedRole = rawRole
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+
       const roleMap: Record<string, UserRole> = {
         'PACIENTE': 'PACIENTE',
         'PATIENT': 'PACIENTE',
@@ -64,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         'ADMIN': 'ADMIN',
         'ADMINISTRADOR': 'ADMIN',
       };
-      const mappedRole = roleMap[rawRole] || 'PACIENTE';
+      const mappedRole = roleMap[normalizedRole] || 'PACIENTE';
 
       // Construir objeto user compatible con el frontend
       const newUser: User = {
