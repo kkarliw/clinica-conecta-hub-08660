@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import RequireRole from "@/components/RequireRole";
+import { NotificationListener } from "@/components/NotificationListener";
 import Layout from "@/components/Layout";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import DoctorLayout from "@/components/layouts/DoctorLayout";
@@ -34,7 +35,7 @@ import PatientDashboard from "@/pages/patient/PatientDashboard";
 import PatientAppointments from "@/pages/patient/PatientAppointments";
 import NewAppointment from "@/pages/patient/NewAppointment";
 import PatientHistory from "@/pages/patient/PatientHistory";
-import PatientHealth from "@/pages/patient/PatientHealth";
+import PatientHealthComplete from "@/pages/patient/PatientHealthComplete";
 import PatientProfile from "@/pages/patient/PatientProfile";
 import CuidadorDashboard from "@/pages/cuidador/CuidadorDashboard";
 import CuidadorPatients from "@/pages/cuidador/CuidadorPacientes";
@@ -69,6 +70,7 @@ const App = () => (
       <Sonner position="top-right" />
       <BrowserRouter>
         <AuthProvider>
+          <NotificationListener />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
@@ -206,7 +208,7 @@ const App = () => (
             } />
             <Route path="/paciente/salud" element={
               <RequireRole role="PACIENTE">
-                <PatientLayout><PatientHealth /></PatientLayout>
+                <PatientLayout><PatientHealthComplete /></PatientLayout>
               </RequireRole>
             } />
             <Route path="/paciente/perfil" element={
