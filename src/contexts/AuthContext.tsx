@@ -70,28 +70,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
-      // Redirigir según el rol con setTimeout para evitar problemas de navegación
-      setTimeout(() => {
-        switch (rol as UserRole) {
-          case 'PACIENTE':
-            navigate('/paciente/dashboard', { replace: true });
-            break;
-          case 'MEDICO':
-            navigate('/medico/dashboard', { replace: true });
-            break;
-          case 'RECEPCIONISTA':
-            navigate('/recepcion/dashboard', { replace: true });
-            break;
-          case 'CUIDADOR':
-            navigate('/cuidador/dashboard', { replace: true });
-            break;
-          case 'ADMIN':
-            navigate('/admin/dashboard', { replace: true });
-            break;
-          default:
-            navigate('/', { replace: true });
-        }
-      }, 100);
+      // Redirigir según el rol
+      switch (rol as UserRole) {
+        case 'PACIENTE':
+          navigate('/paciente/dashboard', { replace: true });
+          break;
+        case 'MEDICO':
+          navigate('/medico/dashboard', { replace: true });
+          break;
+        case 'RECEPCIONISTA':
+          navigate('/recepcion/dashboard', { replace: true });
+          break;
+        case 'CUIDADOR':
+          navigate('/cuidador/dashboard', { replace: true });
+          break;
+        case 'ADMIN':
+          navigate('/admin/dashboard', { replace: true });
+          break;
+        default:
+          navigate('/', { replace: true });
+      }
     } catch (error: any) {
       console.error('Error en login:', error);
       const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Credenciales incorrectas';
