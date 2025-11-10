@@ -16,9 +16,11 @@ interface ProfesionalFormProps {
 export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }: ProfesionalFormProps) {
   const [formData, setFormData] = useState<ProfesionalSalud>({
     nombre: "",
+    apellido: "",
     especialidad: "",
-    correo: "",
+    email: "",
     telefono: "",
+    numeroLicencia: "",
   });
 
   const handleChange = (field: keyof ProfesionalSalud, value: string) => {
@@ -33,9 +35,11 @@ export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }
   const resetForm = () => {
     setFormData({
       nombre: "",
+      apellido: "",
       especialidad: "",
-      correo: "",
+      email: "",
       telefono: "",
+      numeroLicencia: "",
     });
   };
 
@@ -54,15 +58,28 @@ export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre Completo *</Label>
-            <Input
-              id="nombre"
-              value={formData.nombre}
-              onChange={(e) => handleChange("nombre", e.target.value)}
-              placeholder="Ej: Dr. Carlos López"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre *</Label>
+              <Input
+                id="nombre"
+                value={formData.nombre}
+                onChange={(e) => handleChange("nombre", e.target.value)}
+                placeholder="Ej: Carlos"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="apellido">Apellido *</Label>
+              <Input
+                id="apellido"
+                value={formData.apellido}
+                onChange={(e) => handleChange("apellido", e.target.value)}
+                placeholder="Ej: Rodríguez"
+                required
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -77,12 +94,12 @@ export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="correo">Correo Electrónico *</Label>
+            <Label htmlFor="email">Correo Electrónico *</Label>
             <Input
-              id="correo"
+              id="email"
               type="email"
-              value={formData.correo}
-              onChange={(e) => handleChange("correo", e.target.value)}
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
               placeholder="doctor@clinica.com"
               required
             />
@@ -94,7 +111,18 @@ export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }
               id="telefono"
               value={formData.telefono}
               onChange={(e) => handleChange("telefono", e.target.value)}
-              placeholder="+52 123 456 7890"
+              placeholder="3001234567"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="numeroLicencia">Número de Licencia *</Label>
+            <Input
+              id="numeroLicencia"
+              value={formData.numeroLicencia}
+              onChange={(e) => handleChange("numeroLicencia", e.target.value)}
+              placeholder="Ej: MED123456"
               required
             />
           </div>

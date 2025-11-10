@@ -33,17 +33,17 @@ export const generateHistoriaPDF = (
   
   yPos += 8;
   doc.setFont(undefined, 'normal');
-  doc.text(`Nombre: ${paciente.nombre}`, 20, yPos);
+  doc.text(`Nombre: ${paciente.nombre} ${paciente.apellido}`, 20, yPos);
   
   yPos += 7;
-  doc.text(`Edad: ${paciente.edad} años`, 20, yPos);
+  doc.text(`Fecha de Nacimiento: ${paciente.fechaNacimiento}`, 20, yPos);
   
   yPos += 7;
   doc.text(`Contacto: ${paciente.telefono}`, 20, yPos);
   
-  if (paciente.documento) {
+  if (paciente.numeroDocumento) {
     yPos += 7;
-    doc.text(`Documento: ${paciente.documento}`, 20, yPos);
+    doc.text(`Documento: ${paciente.numeroDocumento}`, 20, yPos);
   }
 
   yPos += 12;

@@ -16,10 +16,13 @@ interface PacienteFormProps {
 export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: PacienteFormProps) {
   const [formData, setFormData] = useState<Paciente>({
     nombre: "",
-    edad: 0,
-    correo: "",
+    apellido: "",
+    email: "",
     telefono: "",
     direccion: "",
+    numeroDocumento: "",
+    fechaNacimiento: "",
+    genero: "MASCULINO",
   });
 
   const handleChange = (field: keyof Paciente, value: string | number) => {
@@ -34,10 +37,13 @@ export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: P
   const resetForm = () => {
     setFormData({
       nombre: "",
-      edad: 0,
-      correo: "",
+      apellido: "",
+      email: "",
       telefono: "",
       direccion: "",
+      numeroDocumento: "",
+      fechaNacimiento: "",
+      genero: "MASCULINO",
     });
   };
 
@@ -56,38 +62,76 @@ export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: P
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre *</Label>
+              <Input
+                id="nombre"
+                value={formData.nombre}
+                onChange={(e) => handleChange("nombre", e.target.value)}
+                placeholder="Ej: Juan"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="apellido">Apellido *</Label>
+              <Input
+                id="apellido"
+                value={formData.apellido}
+                onChange={(e) => handleChange("apellido", e.target.value)}
+                placeholder="Ej: Pérez"
+                required
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre Completo *</Label>
+            <Label htmlFor="numeroDocumento">Número de Documento *</Label>
             <Input
-              id="nombre"
-              value={formData.nombre}
-              onChange={(e) => handleChange("nombre", e.target.value)}
-              placeholder="Ej: Juan Pérez"
+              id="numeroDocumento"
+              value={formData.numeroDocumento}
+              onChange={(e) => handleChange("numeroDocumento", e.target.value)}
+              placeholder="Ej: 1234567890"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="edad">Edad *</Label>
-            <Input
-              id="edad"
-              type="number"
-              value={formData.edad}
-              onChange={(e) => handleChange("edad", parseInt(e.target.value) || 0)}
-              placeholder="Ej: 35"
-              min="0"
-              max="120"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="fechaNacimiento">Fecha de Nacimiento *</Label>
+              <Input
+                id="fechaNacimiento"
+                type="date"
+                value={formData.fechaNacimiento}
+                onChange={(e) => handleChange("fechaNacimiento", e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="genero">Género *</Label>
+              <select
+                id="genero"
+                value={formData.genero}
+                onChange={(e) => handleChange("genero", e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                required
+              >
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMENINO">Femenino</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="correo">Correo Electrónico *</Label>
+            <Label htmlFor="email">Correo Electrónico *</Label>
             <Input
-              id="correo"
+              id="email"
               type="email"
-              value={formData.correo}
-              onChange={(e) => handleChange("correo", e.target.value)}
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
               placeholder="ejemplo@correo.com"
               required
             />
@@ -99,7 +143,7 @@ export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: P
               id="telefono"
               value={formData.telefono}
               onChange={(e) => handleChange("telefono", e.target.value)}
-              placeholder="+52 123 456 7890"
+              placeholder="3001234567"
               required
             />
           </div>

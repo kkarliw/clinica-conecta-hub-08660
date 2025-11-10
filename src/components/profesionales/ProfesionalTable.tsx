@@ -75,7 +75,7 @@ export default function ProfesionalTable({ profesionales }: ProfesionalTableProp
                     <TableCell className="font-medium">
                       <Badge variant="outline">{profesional.id}</Badge>
                     </TableCell>
-                    <TableCell className="font-medium text-foreground">{profesional.nombre}</TableCell>
+                    <TableCell className="font-medium text-foreground">{profesional.nombre} {profesional.apellido}</TableCell>
                     <TableCell>
                       <Badge className="bg-secondary text-secondary-foreground">
                         {profesional.especialidad}
@@ -84,7 +84,7 @@ export default function ProfesionalTable({ profesionales }: ProfesionalTableProp
                     <TableCell>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Mail className="w-4 h-4" />
-                        {profesional.correo}
+                        {profesional.email}
                       </div>
                     </TableCell>
                     <TableCell>

@@ -1,21 +1,23 @@
 export interface Paciente {
   id?: number;
   nombre: string;
-  edad: number;
-  correo: string;
+  apellido: string;
+  email: string;
   telefono: string;
   direccion: string;
-  documento?: string;
-  estadoActivo?: boolean;
+  numeroDocumento: string;
+  fechaNacimiento: string;
+  genero: 'MASCULINO' | 'FEMENINO' | 'OTRO';
 }
 
 export interface ProfesionalSalud {
   id?: number;
   nombre: string;
-  apellido?: string;
+  apellido: string;
   especialidad: string;
-  correo: string;
+  email: string;
   telefono: string;
+  numeroLicencia: string;
 }
 
 export interface CitaMedica {

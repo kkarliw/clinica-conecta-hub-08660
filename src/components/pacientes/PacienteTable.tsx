@@ -30,7 +30,7 @@ export default function PacienteTable({ pacientes }: PacienteTableProps) {
                 <TableRow className="bg-muted/50">
                   <TableHead className="font-semibold">ID</TableHead>
                   <TableHead className="font-semibold">Nombre</TableHead>
-                  <TableHead className="font-semibold">Edad</TableHead>
+                  <TableHead className="font-semibold">Documento</TableHead>
                   <TableHead className="font-semibold">Correo</TableHead>
                   <TableHead className="font-semibold">Teléfono</TableHead>
                   <TableHead className="font-semibold">Dirección</TableHead>
@@ -42,12 +42,12 @@ export default function PacienteTable({ pacientes }: PacienteTableProps) {
                     <TableCell className="font-medium">
                       <Badge variant="outline">{paciente.id}</Badge>
                     </TableCell>
-                    <TableCell className="font-medium text-foreground">{paciente.nombre}</TableCell>
-                    <TableCell>{paciente.edad} años</TableCell>
+                    <TableCell className="font-medium text-foreground">{paciente.nombre} {paciente.apellido}</TableCell>
+                    <TableCell>{paciente.numeroDocumento}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Mail className="w-4 h-4" />
-                        {paciente.correo}
+                        {paciente.email}
                       </div>
                     </TableCell>
                     <TableCell>

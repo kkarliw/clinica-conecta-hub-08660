@@ -115,8 +115,8 @@ export default function CaregiverDashboard() {
                         <Heart className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">{paciente.nombre}</p>
-                        <p className="text-sm text-muted-foreground">{paciente.edad} años</p>
+                        <p className="font-medium text-foreground">{paciente.nombre} {paciente.apellido}</p>
+                        <p className="text-sm text-muted-foreground">{paciente.numeroDocumento}</p>
                       </div>
                     </div>
                     <Badge variant="outline">Activo</Badge>

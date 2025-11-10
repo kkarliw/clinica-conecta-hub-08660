@@ -29,7 +29,7 @@ export default function RecepcionistaPacientes() {
     // Búsqueda local primero (rápida)
     const localResults = pacientes.filter(p =>
       p.nombre?.toLowerCase().includes(term.toLowerCase()) ||
-      p.documento?.toLowerCase().includes(term.toLowerCase())
+      p.numeroDocumento?.toLowerCase().includes(term.toLowerCase())
     );
 
     setFilteredPacientes(localResults);

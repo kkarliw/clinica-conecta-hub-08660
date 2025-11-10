@@ -87,7 +87,7 @@ export const buscarPacientesPorNombre = async (nombre: string): Promise<Paciente
 export const buscarPacientePorDocumento = async (documento: string): Promise<Paciente | null> => {
   // TEMPORAL: Filtrar en frontend hasta que exista el endpoint
   const pacientes = await getPacientes();
-  return pacientes.find(p => p.documento === documento) || null;
+  return pacientes.find(p => p.numeroDocumento === documento) || null;
   // TODO: Implementar en backend: GET /api/pacientes/buscar?documento=${documento}
 };
 
