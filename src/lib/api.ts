@@ -310,16 +310,19 @@ export const createNotificacion = async (data: any): Promise<any> => {
 // ============================================
 // USUARIOS (para perfiles)
 // ============================================
-// ⚠️ FALTANTE EN BACKEND - Obtener perfil de usuario
-export const getUsuarioPerfil = async (usuarioId: number): Promise<any> => {
-  // TODO: Implementar en backend: GET /api/usuarios/:id
-  throw new Error('Endpoint /api/usuarios/:id no implementado en backend');
+export const getMiPerfil = async (): Promise<any> => {
+  const response = await api.get('/profesionales/mi-perfil');
+  return response.data;
 };
 
-// ⚠️ FALTANTE EN BACKEND - Actualizar perfil
+export const getUsuarioPerfil = async (usuarioId: number): Promise<any> => {
+  const response = await api.get(`/usuarios/${usuarioId}`);
+  return response.data;
+};
+
 export const updateUsuarioPerfil = async (usuarioId: number, data: any): Promise<any> => {
-  // TODO: Implementar en backend: PUT /api/usuarios/:id
-  throw new Error('Endpoint PUT /api/usuarios/:id no implementado en backend');
+  const response = await api.put(`/usuarios/${usuarioId}`, data);
+  return response.data;
 };
 
 export default api;
