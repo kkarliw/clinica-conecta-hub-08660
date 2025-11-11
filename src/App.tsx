@@ -50,6 +50,9 @@ import DashboardMedico from "@/pages/dashboard/DashboardMedico";
 import DashboardAdmin from "@/pages/dashboard/DashboardAdmin";
 import DashboardEstadisticas from "@/pages/dashboard/DashboardEstadisticas";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import DashboardAnalytics from "@/pages/admin/DashboardAnalytics";
+import ExportarDatos from "@/pages/admin/ExportarDatos";
+import PacienteDetalle from "@/pages/PacienteDetalle";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -105,6 +108,21 @@ const App = () => (
             <Route path="/admin/estadisticas" element={
               <RequireRole role="ADMIN">
                 <AdminLayout><DashboardEstadisticas /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/analytics" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><DashboardAnalytics /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/admin/exportar" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><ExportarDatos /></AdminLayout>
+              </RequireRole>
+            } />
+            <Route path="/pacientes/:id" element={
+              <RequireRole role="ADMIN">
+                <AdminLayout><PacienteDetalle /></AdminLayout>
               </RequireRole>
             } />
 

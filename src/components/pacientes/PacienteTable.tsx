@@ -125,13 +125,15 @@ export default function PacienteTable({ pacientes, onEdit, onDelete }: PacienteT
         )}
       </CardContent>
       
-      <ConfirmDialog
-        isOpen={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
-        title="¿Eliminar paciente?"
-        description="Esta acción no se puede deshacer. Se eliminará permanentemente el paciente y toda su información asociada."
-      />
+      {onDelete && (
+        <ConfirmDialog
+          isOpen={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title="¿Eliminar paciente?"
+          description="Esta acción no se puede deshacer. Se eliminará permanentemente el paciente y toda su información asociada."
+        />
+      )}
     </Card>
   );
 }
