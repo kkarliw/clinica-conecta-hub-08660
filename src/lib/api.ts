@@ -131,12 +131,13 @@ export const getCitasMedico = async (medicoId: number): Promise<CitaMedica[]> =>
 };
 
 export const createCita = async (cita: any): Promise<CitaMedica> => {
-  // Convertir fecha a formato ISO completo si es necesario
+  // Formato esperado por el backend Java: paciente y profesional como objetos con id
   const citaData = {
-    ...cita,
     fecha: cita.fecha || cita.fechaHora,
+    motivo: cita.motivo,
+    paciente: { id: cita.pacienteId },
+    profesional: { id: cita.profesionalId }
   };
-  delete citaData.fechaHora;
   
   const response = await api.post<CitaMedica>('/citas', citaData);
   return response.data;
