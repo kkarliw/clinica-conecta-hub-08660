@@ -11,19 +11,22 @@ interface PacienteFormProps {
   onClose: () => void;
   onSubmit: (data: Paciente) => void;
   isLoading: boolean;
+  initialData?: Paciente;
 }
 
-export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: PacienteFormProps) {
-  const [formData, setFormData] = useState<Paciente>({
-    nombre: "",
-    apellido: "",
-    email: "",
-    telefono: "",
-    direccion: "",
-    numeroDocumento: "",
-    fechaNacimiento: "",
-    genero: "MASCULINO",
-  });
+export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading, initialData }: PacienteFormProps) {
+  const [formData, setFormData] = useState<Paciente>(
+    initialData || {
+      nombre: "",
+      apellido: "",
+      email: "",
+      telefono: "",
+      direccion: "",
+      numeroDocumento: "",
+      fechaNacimiento: "",
+      genero: "MASCULINO",
+    }
+  );
 
   const handleChange = (field: keyof Paciente, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -56,9 +59,9 @@ export default function PacienteForm({ isOpen, onClose, onSubmit, isLoading }: P
     }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Paciente</DialogTitle>
+          <DialogTitle>{initialData ? "Editar Paciente" : "Agregar Nuevo Paciente"}</DialogTitle>
           <DialogDescription>
-            Complete todos los campos para registrar un nuevo paciente
+            {initialData ? "Modifique los campos necesarios" : "Complete todos los campos para registrar un nuevo paciente"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,14 +1,36 @@
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { Paciente } from "@/types";
-import { Users, Mail, Phone, MapPin } from "lucide-react";
+import { Users, Mail, Phone, MapPin, Eye, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface PacienteTableProps {
   pacientes: Paciente[];
+  onEdit?: (paciente: Paciente) => void;
+  onDelete?: (id: number) => void;
 }
 
-export default function PacienteTable({ pacientes }: PacienteTableProps) {
+export default function PacienteTable({ pacientes, onEdit, onDelete }: PacienteTableProps) {
+  const navigate = useNavigate();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const handleDeleteClick = (id: number) => {
+    setSelectedId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedId && onDelete) {
+      onDelete(selectedId);
+      setDeleteDialogOpen(false);
+      setSelectedId(null);
+    }
+  };
   return (
     <Card>
       <CardHeader>
@@ -34,6 +56,7 @@ export default function PacienteTable({ pacientes }: PacienteTableProps) {
                   <TableHead className="font-semibold">Correo</TableHead>
                   <TableHead className="font-semibold">Teléfono</TableHead>
                   <TableHead className="font-semibold">Dirección</TableHead>
+                  <TableHead className="font-semibold text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -62,6 +85,38 @@ export default function PacienteTable({ pacientes }: PacienteTableProps) {
                         {paciente.direccion}
                       </div>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`/pacientes/${paciente.id}`)}
+                          className="gap-1"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        {onEdit && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onEdit(paciente)}
+                            className="gap-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {onDelete && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteClick(paciente.id!)}
+                            className="gap-1 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -69,6 +124,14 @@ export default function PacienteTable({ pacientes }: PacienteTableProps) {
           </div>
         )}
       </CardContent>
+      
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="¿Eliminar paciente?"
+        description="Esta acción no se puede deshacer. Se eliminará permanentemente el paciente y toda su información asociada."
+      />
     </Card>
   );
 }

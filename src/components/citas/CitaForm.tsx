@@ -15,15 +15,18 @@ interface CitaFormProps {
   isLoading: boolean;
   pacientes: Paciente[];
   profesionales: ProfesionalSalud[];
+  initialData?: CitaMedica;
 }
 
-export default function CitaForm({ isOpen, onClose, onSubmit, isLoading, pacientes, profesionales }: CitaFormProps) {
-  const [formData, setFormData] = useState<CitaMedica>({
-    pacienteId: 0,
-    profesionalId: 0,
-    fecha: "",
-    motivo: "",
-  });
+export default function CitaForm({ isOpen, onClose, onSubmit, isLoading, pacientes, profesionales, initialData }: CitaFormProps) {
+  const [formData, setFormData] = useState<CitaMedica>(
+    initialData || {
+      pacienteId: 0,
+      profesionalId: 0,
+      fecha: "",
+      motivo: "",
+    }
+  );
 
   const handleChange = (field: keyof CitaMedica, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -52,9 +55,9 @@ export default function CitaForm({ isOpen, onClose, onSubmit, isLoading, pacient
     }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Agendar Nueva Cita</DialogTitle>
+          <DialogTitle>{initialData ? "Editar Cita" : "Agendar Nueva Cita"}</DialogTitle>
           <DialogDescription>
-            Complete todos los campos para agendar una nueva cita médica
+            {initialData ? "Modifique los campos necesarios" : "Complete todos los campos para agendar una nueva cita médica"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

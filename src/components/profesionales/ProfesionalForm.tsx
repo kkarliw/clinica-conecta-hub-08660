@@ -11,17 +11,20 @@ interface ProfesionalFormProps {
   onClose: () => void;
   onSubmit: (data: ProfesionalSalud) => void;
   isLoading: boolean;
+  initialData?: ProfesionalSalud;
 }
 
-export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }: ProfesionalFormProps) {
-  const [formData, setFormData] = useState<ProfesionalSalud>({
-    nombre: "",
-    apellido: "",
-    especialidad: "",
-    email: "",
-    telefono: "",
-    numeroLicencia: "",
-  });
+export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading, initialData }: ProfesionalFormProps) {
+  const [formData, setFormData] = useState<ProfesionalSalud>(
+    initialData || {
+      nombre: "",
+      apellido: "",
+      especialidad: "",
+      email: "",
+      telefono: "",
+      numeroLicencia: "",
+    }
+  );
 
   const handleChange = (field: keyof ProfesionalSalud, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -52,9 +55,9 @@ export default function ProfesionalForm({ isOpen, onClose, onSubmit, isLoading }
     }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Registrar Nuevo Profesional</DialogTitle>
+          <DialogTitle>{initialData ? "Editar Profesional" : "Registrar Nuevo Profesional"}</DialogTitle>
           <DialogDescription>
-            Complete todos los campos para registrar un profesional de salud
+            {initialData ? "Modifique los campos necesarios" : "Complete todos los campos para registrar un profesional de salud"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
