@@ -1,7 +1,7 @@
 import { Home, Users, Calendar, FileText, Bell, Settings, LogOut, Heart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
@@ -20,11 +20,7 @@ export default function CaregiverSidebar() {
   return (
     <div className="flex h-full w-64 flex-col bg-card border-r">
       <div className="flex items-center gap-3 border-b px-6 py-4">
-        <img src={kenkoLogo} alt="Kenkō" className="h-12 w-auto" />
-        <div>
-          <h2 className="font-bold text-lg font-['Poppins']">Kenkō</h2>
-          <p className="text-xs text-muted-foreground">Panel Cuidador</p>
-        </div>
+        <img src={kenkoLogo} alt="Kenkō" className="h-14 w-auto" />
       </div>
 
       <div className="border-b px-6 py-4 bg-primary/5">

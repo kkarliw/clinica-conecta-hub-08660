@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 
 export default function Landing() {
   const features = [
@@ -76,7 +76,7 @@ export default function Landing() {
       <header className="border-b bg-card/95 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={kenkoLogo} alt="Kenkō" className="h-12 w-auto" />
+            <img src={kenkoLogo} alt="Kenkō" className="h-16 w-auto" />
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -102,7 +102,7 @@ export default function Landing() {
             <motion.img 
               src={kenkoLogo} 
               alt="Kenkō - El camino a tu salud" 
-              className="h-32 w-auto drop-shadow-xl"
+              className="h-48 md:h-56 w-auto drop-shadow-xl"
               animate={{ 
                 scale: [1, 1.02, 1],
               }}

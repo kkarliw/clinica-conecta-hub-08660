@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
@@ -49,7 +49,7 @@ export default function Login() {
         <Card className="shadow-lg border-2">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src={kenkoLogo} alt="Kenkō" className="h-20 w-auto" />
+              <img src={kenkoLogo} alt="Kenkō" className="h-28 w-auto" />
             </div>
             <CardTitle className="text-2xl font-['Poppins']">Iniciar sesión</CardTitle>
             <CardDescription>Accede a tu cuenta de Kenkō</CardDescription>
