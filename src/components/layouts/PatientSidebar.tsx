@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 
 const menuItems = [
   { title: "Inicio", url: "/paciente/dashboard", icon: LayoutDashboard },
@@ -29,8 +29,7 @@ export function PatientSidebar() {
       <SidebarContent>
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
-            <img src={kenkoLogo} alt="Kenkō" className="h-10 w-auto" />
-            {open && <span className="font-bold text-lg text-primary font-['Poppins']">Kenkō</span>}
+            <img src={kenkoLogo} alt="Kenkō" className="h-14 w-auto" />
           </div>
         </div>
 

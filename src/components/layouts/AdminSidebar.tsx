@@ -1,7 +1,7 @@
 import { LayoutDashboard, Users, Stethoscope, Calendar, FileText, BarChart, Settings, User, TrendingUp, FileDown } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -36,8 +36,7 @@ export default function AdminSidebar() {
       <SidebarContent>
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
-            <img src={kenkoLogo} alt="Kenkō" className="h-10 w-auto" />
-            {open && <span className="font-bold text-lg text-primary font-['Poppins']">Kenkō</span>}
+            <img src={kenkoLogo} alt="Kenkō" className="h-14 w-auto" />
           </div>
         </div>
 

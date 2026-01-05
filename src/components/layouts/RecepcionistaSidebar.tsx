@@ -2,7 +2,7 @@ import { Home, Calendar, Users, Settings, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 
 export default function RecepcionistaSidebar() {
   const location = useLocation();
@@ -20,11 +20,7 @@ export default function RecepcionistaSidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <img src={kenkoLogo} alt="Kenkō" className="h-12 w-auto" />
-          <div>
-            <h2 className="font-bold text-lg text-sidebar-foreground font-['Poppins']">Kenkō</h2>
-            <p className="text-xs text-sidebar-foreground/60">Recepción</p>
-          </div>
+          <img src={kenkoLogo} alt="Kenkō" className="h-14 w-auto" />
         </div>
       </div>
 

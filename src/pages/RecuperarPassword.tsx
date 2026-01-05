@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import kenkoLogo from "@/assets/kenko-logo.jpg";
+import kenkoLogo from "@/assets/kenko-logo.png";
 
 export default function RecuperarPassword() {
   const [correo, setCorreo] = useState("");
@@ -55,7 +55,7 @@ export default function RecuperarPassword() {
             ) : (
               <>
                 <div className="flex justify-center mb-4">
-                  <img src={kenkoLogo} alt="Kenkō" className="h-20 w-auto" />
+                  <img src={kenkoLogo} alt="Kenkō" className="h-28 w-auto" />
                 </div>
                 <CardTitle className="text-2xl font-['Poppins']">Recuperar contraseña</CardTitle>
                 <CardDescription>
