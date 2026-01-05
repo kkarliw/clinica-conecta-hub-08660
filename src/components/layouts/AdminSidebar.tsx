@@ -1,7 +1,7 @@
 import { LayoutDashboard, Users, Stethoscope, Calendar, FileText, BarChart, Settings, User, TrendingUp, FileDown } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -29,7 +29,6 @@ const menuItems = [
 
 export default function AdminSidebar() {
   const { open } = useSidebar();
-  const location = useLocation();
   const { user, logout } = useAuth();
 
   return (
@@ -37,8 +36,8 @@ export default function AdminSidebar() {
       <SidebarContent>
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
-            <img src={healixLogo} alt="Healix Pro" className="w-8 h-8" />
-            {open && <span className="font-bold text-lg text-primary">Healix Pro</span>}
+            <img src={kenkoLogo} alt="Kenkō" className="h-10 w-auto" />
+            {open && <span className="font-bold text-lg text-primary font-['Poppins']">Kenkō</span>}
           </div>
         </div>
 

@@ -2,109 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ========================================
+   KENKŌ DESIGN SYSTEM
+   El camino a tu salud
+   ======================================== */
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 210 40% 20%;
+    /* Kenkō Brand Colors */
+    --background: 240 14% 97%;           /* #F7F7F9 - Blanco suave */
+    --foreground: 0 0% 12%;              /* #1E1E1E - Gris oscuro texto */
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 40% 20%;
+    --card: 0 0% 100%;                   /* #FFFFFF - Blanco puro */
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 20%;
+    --popover-foreground: 0 0% 12%;
 
-    /* Paleta Healix Pro - Azul principal */
-    --primary: 200 100% 45%;
+    /* Azul Kenkō Principal */
+    --primary: 238 41% 41%;              /* #3E4194 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 195 100% 85%;
-    --primary-dark: 210 60% 35%;
+    --primary-light: 237 49% 58%;        /* #5A5FCF - Hover/Focus */
+    --primary-dark: 238 45% 35%;
 
-    /* Verde menta para acciones positivas */
-    --secondary: 160 50% 65%;
-    --secondary-foreground: 210 40% 20%;
-    
-    /* Colores adicionales para la landing médica */
-    --medical-mint: 165 60% 75%;
-    --medical-lavender: 250 40% 75%;
-    --medical-success: 145 60% 50%;
+    /* Gris secundario */
+    --secondary: 240 11% 87%;            /* #D9D9E3 */
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 210 15% 50%;
+    /* Colores de estado */
+    --success: 145 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 12%;
 
-    --accent: 195 100% 95%;
-    --accent-foreground: 200 100% 35%;
+    --muted: 240 10% 94%;
+    --muted-foreground: 240 5% 46%;
 
-    --destructive: 0 84.2% 60.2%;
+    --accent: 238 30% 95%;
+    --accent-foreground: 238 41% 41%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 200 100% 45%;
+    --border: 240 11% 87%;
+    --input: 240 11% 87%;
+    --ring: 238 41% 41%;
 
     --radius: 0.75rem;
 
-    /* Sidebar Healix */
+    /* Sidebar Kenkō */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 210 40% 20%;
-    --sidebar-primary: 200 100% 45%;
+    --sidebar-foreground: 0 0% 12%;
+    --sidebar-primary: 238 41% 41%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 195 100% 95%;
-    --sidebar-accent-foreground: 200 100% 35%;
-    --sidebar-border: 214 20% 88%;
-    --sidebar-ring: 200 100% 45%;
+    --sidebar-accent: 238 30% 95%;
+    --sidebar-accent-foreground: 238 41% 41%;
+    --sidebar-border: 240 11% 87%;
+    --sidebar-ring: 238 41% 41%;
 
-    /* Gradientes médicos */
-    --gradient-primary: linear-gradient(135deg, hsl(200, 100%, 45%), hsl(195, 100%, 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(160, 40%, 70%), hsl(160, 45%, 80%));
-    --gradient-hero: linear-gradient(180deg, hsl(195, 100%, 95%), hsl(0, 0%, 98%));
-    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 8px 24px rgba(0, 120, 215, 0.12);
-    --shadow-lg: 0 20px 40px rgba(0, 120, 215, 0.15);
+    /* Gradientes Kenkō */
+    --gradient-primary: linear-gradient(135deg, hsl(238, 41%, 41%), hsl(237, 49%, 58%));
+    --gradient-hero: linear-gradient(180deg, hsl(238, 30%, 95%), hsl(240, 14%, 97%));
+    
+    /* Sombras */
+    --shadow-card: 0 2px 12px rgba(62, 65, 148, 0.06);
+    --shadow-hover: 0 8px 24px rgba(62, 65, 148, 0.12);
+    --shadow-lg: 0 20px 40px rgba(62, 65, 148, 0.15);
   }
 
   .dark {
-    --background: 215 30% 12%;
-    --foreground: 210 20% 95%;
+    --background: 240 20% 10%;
+    --foreground: 0 0% 95%;
 
-    --card: 215 30% 15%;
-    --card-foreground: 210 20% 95%;
+    --card: 240 20% 13%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 215 30% 15%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 240 20% 13%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 200 100% 55%;
+    /* Azul Kenkō en Dark */
+    --primary: 237 60% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 195 100% 75%;
-    --primary-dark: 210 70% 40%;
+    --primary-light: 237 55% 75%;
+    --primary-dark: 238 50% 50%;
 
-    --secondary: 160 35% 60%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 240 15% 25%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 215 20% 22%;
-    --muted-foreground: 210 15% 65%;
+    --muted: 240 15% 20%;
+    --muted-foreground: 240 10% 60%;
 
-    --accent: 200 80% 25%;
-    --accent-foreground: 195 100% 85%;
+    --accent: 238 40% 20%;
+    --accent-foreground: 237 60% 75%;
 
-    --destructive: 0 62.8% 50.6%;
+    --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 28%;
-    --input: 215 20% 28%;
-    --ring: 200 100% 55%;
+    --border: 240 15% 25%;
+    --input: 240 15% 25%;
+    --ring: 237 60% 65%;
 
-    --sidebar-background: 215 30% 15%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 200 100% 55%;
+    --sidebar-background: 240 20% 13%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 237 60% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 200 80% 25%;
-    --sidebar-accent-foreground: 195 100% 85%;
-    --sidebar-border: 215 20% 28%;
-    --sidebar-ring: 200 100% 55%;
+    --sidebar-accent: 238 40% 20%;
+    --sidebar-accent-foreground: 237 60% 75%;
+    --sidebar-border: 240 15% 25%;
+    --sidebar-ring: 237 60% 65%;
   }
 }
 
@@ -121,7 +126,7 @@ All colors MUST be HSL.
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Animaciones personalizadas */
+  /* Animaciones Kenkō */
   @keyframes slide-up {
     from {
       opacity: 0;
@@ -144,6 +149,15 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes pulse-soft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
   .animate-slide-up {
     animation: slide-up 0.3s ease-out;
   }
@@ -152,13 +166,17 @@ All colors MUST be HSL.
     animation: slide-in-right 0.3s ease-out;
   }
 
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
   /* Alto contraste */
   .high-contrast {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
     --card: 0 0% 95%;
     --card-foreground: 0 0% 0%;
-    --primary: 200 100% 30%;
+    --primary: 238 50% 30%;
     --primary-foreground: 0 0% 100%;
     --border: 0 0% 20%;
     --input: 0 0% 20%;
@@ -169,9 +187,24 @@ All colors MUST be HSL.
     --foreground: 0 0% 100%;
     --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
-    --primary: 200 100% 70%;
+    --primary: 237 60% 70%;
     --primary-foreground: 0 0% 0%;
     --border: 0 0% 80%;
     --input: 0 0% 80%;
+  }
+}
+
+/* Estilos específicos Kenkō */
+@layer components {
+  .kenko-gradient-text {
+    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
+  }
+
+  .kenko-card {
+    @apply bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .kenko-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors;
   }
 }

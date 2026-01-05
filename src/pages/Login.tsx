@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
@@ -35,24 +35,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Volver al inicio
         </Link>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg border-2">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src={healixLogo} alt="Healix Pro" className="h-16 w-16" />
+              <img src={kenkoLogo} alt="Kenkō" className="h-20 w-auto" />
             </div>
-            <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
-            <CardDescription>Accede a tu cuenta de Healix Pro</CardDescription>
+            <CardTitle className="text-2xl font-['Poppins']">Iniciar sesión</CardTitle>
+            <CardDescription>Accede a tu cuenta de Kenkō</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,19 +89,19 @@ export default function Login() {
               </div>
 
               <div className="text-right">
-                <Link to="/recuperar-password" className="text-sm text-primary hover:underline">
+                <Link to="/recuperar-password" className="text-sm text-primary hover:underline font-medium">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full font-semibold" disabled={isLoading}>
                 {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
               </Button>
             </form>
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">¿No tienes cuenta? </span>
-              <Link to="/registro" className="text-primary font-medium hover:underline">
+              <Link to="/registro" className="text-primary font-semibold hover:underline">
                 Regístrate aquí
               </Link>
             </div>
