@@ -1,7 +1,7 @@
 import { Home, Users, Calendar, FileText, Bell, Settings, LogOut, Heart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
@@ -20,9 +20,9 @@ export default function CaregiverSidebar() {
   return (
     <div className="flex h-full w-64 flex-col bg-card border-r">
       <div className="flex items-center gap-3 border-b px-6 py-4">
-        <img src={healixLogo} alt="Healix Pro" className="h-10 w-10" />
+        <img src={kenkoLogo} alt="Kenkō" className="h-12 w-auto" />
         <div>
-          <h2 className="font-bold text-lg">Healix Pro</h2>
+          <h2 className="font-bold text-lg font-['Poppins']">Kenkō</h2>
           <p className="text-xs text-muted-foreground">Panel Cuidador</p>
         </div>
       </div>

@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 
 export default function Landing() {
   const features = [
@@ -71,22 +71,19 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-accent via-background to-muted">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card/95 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={healixLogo} alt="Healix Pro" className="h-10 w-10" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              Healix Pro
-            </span>
+            <img src={kenkoLogo} alt="Kenkō" className="h-12 w-auto" />
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
-              <Button variant="ghost" className="font-medium">Iniciar sesión</Button>
+              <Button variant="ghost" className="font-medium text-foreground hover:text-primary">Iniciar sesión</Button>
             </Link>
             <Link to="/registro">
-              <Button className="gap-2 font-medium shadow-lg shadow-primary/20">
+              <Button className="gap-2 font-semibold shadow-lg hover:shadow-xl transition-all">
                 Registrarse <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -103,22 +100,22 @@ export default function Landing() {
         >
           <div className="flex justify-center mb-8">
             <motion.img 
-              src={healixLogo} 
-              alt="Healix Pro Logo" 
-              className="h-28 w-28 drop-shadow-2xl"
+              src={kenkoLogo} 
+              alt="Kenkō - El camino a tu salud" 
+              className="h-32 w-auto drop-shadow-xl"
               animate={{ 
-                scale: [1, 1.05, 1],
+                scale: [1, 1.02, 1],
               }}
               transition={{ 
-                duration: 3,
+                duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             />
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight font-['Poppins']">
             Tu consultorio digital,{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-primary">
               más inteligente
             </span>
           </h1>
@@ -130,12 +127,12 @@ export default function Landing() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link to="/registro">
-              <Button size="lg" className="text-lg gap-2 px-8 py-6 shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 transition-all">
+              <Button size="lg" className="text-lg gap-2 px-8 py-6 shadow-xl hover:shadow-2xl transition-all font-semibold">
                 Comenzar gratis <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link to="/login">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 hover:bg-accent">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-primary/30 hover:bg-primary/5 hover:border-primary font-semibold">
                 Ver demo
               </Button>
             </Link>
@@ -158,7 +155,7 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-4 py-20 bg-gradient-to-b from-transparent to-card/30">
+      <section className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -166,7 +163,7 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 font-['Poppins']">
               Todo lo que necesitas en un solo lugar
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -183,9 +180,9 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-primary/20">
+                <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-2 hover:border-primary/20">
                   <CardContent className="p-8">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                       <feature.icon className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -199,7 +196,7 @@ export default function Landing() {
       </section>
 
       {/* Patient Panel Section */}
-      <section className="container mx-auto px-4 py-24 bg-gradient-to-br from-accent/30 via-transparent to-accent/30 rounded-3xl my-12">
+      <section className="container mx-auto px-4 py-24 bg-accent/30 rounded-3xl my-12">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -210,7 +207,7 @@ export default function Landing() {
               <Activity className="w-6 h-6 text-primary" />
               <span className="font-semibold text-primary">Para Pacientes</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-['Poppins']">
               Tu salud, siempre accesible
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -267,18 +264,18 @@ export default function Landing() {
       </section>
 
       {/* Doctor Panel Section */}
-      <section className="container mx-auto px-4 py-24 bg-gradient-to-br from-medical-mint/20 via-transparent to-medical-mint/20 rounded-3xl my-12">
+      <section className="container mx-auto px-4 py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-secondary/20 rounded-full mb-6">
-              <Stethoscope className="w-6 h-6 text-secondary-foreground" />
-              <span className="font-semibold text-secondary-foreground">Para Profesionales de la Salud</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full mb-6">
+              <Stethoscope className="w-6 h-6 text-primary" />
+              <span className="font-semibold text-primary">Para Profesionales de la Salud</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-['Poppins']">
               Optimiza tu práctica médica
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -296,11 +293,11 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full border-l-4 border-l-secondary hover:shadow-lg transition-all">
+                <Card className="h-full border-l-4 border-l-primary/60 hover:shadow-lg transition-all">
                   <CardHeader>
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="w-6 h-6 text-secondary-foreground" />
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <feature.icon className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <CardTitle className="text-lg mb-2">{feature.title}</CardTitle>
@@ -313,18 +310,18 @@ export default function Landing() {
             ))}
           </div>
 
-          <div className="mt-12 p-8 bg-card rounded-2xl border-2 border-secondary/30">
+          <div className="mt-12 p-8 bg-card rounded-2xl border-2 border-primary/20">
             <div className="flex items-start gap-4">
-              <TrendingUp className="w-6 h-6 text-secondary-foreground flex-shrink-0 mt-1" />
+              <TrendingUp className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
               <div>
                 <h4 className="font-semibold text-lg mb-2">Ventajas adicionales</h4>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                     Dashboard con métricas de desempeño y satisfacción del paciente
                   </li>
                   <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                     Alertas automáticas para nuevas citas o cambios en la agenda
                   </li>
                 </ul>
@@ -335,18 +332,18 @@ export default function Landing() {
       </section>
 
       {/* Admin Panel Section */}
-      <section className="container mx-auto px-4 py-24 bg-gradient-to-br from-medical-lavender/20 via-transparent to-medical-lavender/20 rounded-3xl my-12">
+      <section className="container mx-auto px-4 py-24 bg-secondary/30 rounded-3xl my-12">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-medical-lavender/30 rounded-full mb-6">
-              <Settings className="w-6 h-6 text-foreground" />
-              <span className="font-semibold text-foreground">Para Administradores</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full mb-6">
+              <Settings className="w-6 h-6 text-primary" />
+              <span className="font-semibold text-primary">Para Administradores</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-['Poppins']">
               Control total de tu organización
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -364,11 +361,11 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full border-l-4 border-l-medical-lavender hover:shadow-lg transition-all">
+                <Card className="h-full border-l-4 border-l-primary/40 hover:shadow-lg transition-all">
                   <CardHeader>
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-medical-lavender/20 flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="w-6 h-6 text-foreground" />
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <feature.icon className="w-6 h-6 text-primary" />
                       </div>
                       <div>
                         <CardTitle className="text-lg mb-2">{feature.title}</CardTitle>
@@ -380,25 +377,6 @@ export default function Landing() {
               </motion.div>
             ))}
           </div>
-
-          <div className="mt-12 p-8 bg-card rounded-2xl border-2 border-medical-lavender/30">
-            <div className="flex items-start gap-4">
-              <Download className="w-6 h-6 text-foreground flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-semibold text-lg mb-2">Funciones premium</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-medical-lavender"></div>
-                    Módulo opcional de pagos y facturación integrado
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-medical-lavender"></div>
-                    Exportación avanzada de reportes en múltiples formatos (PDF, Excel, CSV)
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </motion.div>
       </section>
 
@@ -408,128 +386,41 @@ export default function Landing() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Transforma la gestión de tu consultorio hoy
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-['Poppins']">
+            Comienza tu camino a la <span className="text-primary">salud digital</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Únete a cientos de profesionales que ya confían en Healix Pro para llevar su práctica médica al siguiente nivel
+          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+            Únete a cientos de profesionales que ya confían en Kenkō para gestionar sus consultorios
           </p>
-          <Link to="/registro">
-            <Button size="lg" className="text-lg gap-2 px-10 py-7 shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all">
-              Comenzar gratis ahora <ArrowRight className="w-5 h-5" />
-            </Button>
-          </Link>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link to="/registro">
+              <Button size="lg" className="text-lg gap-2 px-10 py-6 shadow-xl hover:shadow-2xl transition-all font-semibold">
+                Crear cuenta gratis <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
         </motion.div>
       </section>
 
-      {/* Accesibilidad e Inclusión */}
-      <section className="bg-gradient-to-br from-accent/30 via-background to-accent/30 py-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 rounded-full mb-6">
-              <HeartPulse className="w-6 h-6 text-primary" />
-              <span className="font-semibold text-primary">Accesibilidad e Inclusión</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Diseñado para todos
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Healix Pro cumple con los estándares WCAG 2.1 de accesibilidad digital. 
-              Nuestra plataforma está diseñada para ser inclusiva, con alto contraste, 
-              navegación por teclado, texto ampliable y compatibilidad con lectores de pantalla.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <Card className="border-2">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Contraste Alto</h3>
-                  <p className="text-sm text-muted-foreground">Optimizado para personas con baja visión</p>
-                </CardContent>
-              </Card>
-              <Card className="border-2">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <HeartPulse className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Navegación Fácil</h3>
-                  <p className="text-sm text-muted-foreground">Teclado, voz y pantallas táctiles</p>
-                </CardContent>
-              </Card>
-              <Card className="border-2">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Para Todos</h3>
-                  <p className="text-sm text-muted-foreground">Inclusivo sin importar capacidades</p>
-                </CardContent>
-              </Card>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-card border-t py-12">
+      <footer className="border-t bg-card py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <img src={healixLogo} alt="Healix Pro" className="h-10 w-10" />
-                <span className="text-xl font-bold">Healix Pro</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Gestión médica inteligente y humana. Simplificamos la atención en consultorios.
-              </p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <img src={kenkoLogo} alt="Kenkō" className="h-10 w-auto" />
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Producto</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/registro" className="hover:text-primary transition-colors">Registrarse</Link></li>
-                <li><Link to="/login" className="hover:text-primary transition-colors">Iniciar sesión</Link></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Características</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Precios</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Soporte</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Centro de ayuda</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Documentación</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contacto</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Estado del servicio</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Privacidad</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Términos de uso</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Accesibilidad</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">HIPAA Compliance</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p className="mb-2">
-              © 2024 Healix Pro. Todos los derechos reservados.
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Kenkō. El camino a tu salud. Todos los derechos reservados.
             </p>
-            <p className="text-xs">
-              <strong>Diseñado para todos.</strong> Healix Pro cumple con los estándares de accesibilidad digital e inclusión WCAG 2.1.
-            </p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-primary transition-colors">Términos</a>
+              <a href="#" className="hover:text-primary transition-colors">Privacidad</a>
+              <a href="#" className="hover:text-primary transition-colors">Contacto</a>
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-

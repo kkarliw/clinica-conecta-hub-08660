@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 
 const menuItems = [
   { title: "Dashboard", url: "/medico/dashboard", icon: LayoutDashboard },
@@ -29,8 +29,8 @@ export function DoctorSidebar() {
       <SidebarContent>
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
-            <img src={healixLogo} alt="Healix Pro" className="w-8 h-8" />
-            {open && <span className="font-bold text-lg text-primary">Healix Pro</span>}
+            <img src={kenkoLogo} alt="Kenkō" className="h-10 w-auto" />
+            {open && <span className="font-bold text-lg text-primary font-['Poppins']">Kenkō</span>}
           </div>
         </div>
 

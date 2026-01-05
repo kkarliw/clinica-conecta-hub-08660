@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import healixLogo from "@/assets/healix-logo.png";
+import kenkoLogo from "@/assets/kenko-logo.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 type UserRole = "PACIENTE" | "MEDICO" | "RECEPCIONISTA" | "ADMIN" | "CUIDADOR" | null;
@@ -186,8 +186,8 @@ export default function Registro() {
           </Link>
 
           <div className="text-center mb-8">
-            <img src={healixLogo} alt="Healix Pro" className="h-20 w-20 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-foreground mb-2">Crear cuenta en Healix Pro</h1>
+            <img src={kenkoLogo} alt="Kenkō" className="h-24 w-auto mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-foreground mb-2 font-['Poppins']">Crear cuenta en Kenkō</h1>
             <p className="text-muted-foreground">Selecciona el tipo de cuenta que deseas crear</p>
           </div>
 
