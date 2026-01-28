@@ -66,6 +66,7 @@ import LandingConsultorios from "@/pages/LandingConsultorios";
 import BuscarConsultorios from "@/pages/BuscarConsultorios";
 import ConsultorioPublico from "@/pages/ConsultorioPublico";
 import RegistroConsultorio from "@/pages/RegistroConsultorio";
+import AgendarCita from "@/pages/AgendarCita";
 
 // Consultorio Admin Pages
 import ConsultorioDashboard from "@/pages/consultorio/Dashboard";
@@ -107,6 +108,7 @@ const App = () => (
             <Route path="/para-consultorios" element={<LandingConsultorios />} />
             <Route path="/buscar" element={<BuscarConsultorios />} />
             <Route path="/consultorio/:slug" element={<ConsultorioPublico />} />
+            <Route path="/agendar/:slug" element={<AgendarCita />} />
             <Route path="/registro/consultorio" element={<RegistroConsultorio />} />
 
             {/* Admin Routes */}
