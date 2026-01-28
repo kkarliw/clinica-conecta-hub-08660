@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User, Calendar, Stethoscope, Clock, Heart, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card } from '@/components/ui/card';
+import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { MessageCircle, X, Send, Bot, User, Calendar, Search, Stethoscope, HelpCircle, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 interface Message {
-  id: string;
+  id: number;
   text: string;
   isBot: boolean;
   timestamp: Date;
@@ -17,266 +17,292 @@ interface Message {
 interface QuickAction {
   label: string;
   action: string;
-  icon?: any;
+  icon?: React.ReactNode;
 }
 
-// Medical FAQ knowledge base
-const medicalFAQ = {
-  keywords: {
-    cita: {
-      response: "Para agendar una cita médica, puedes:\n\n1. **Iniciar sesión** en tu cuenta de paciente\n2. Ir a la sección **'Mis Citas'**\n3. Seleccionar el **especialista** y **horario** disponible\n\n¿Te gustaría que te guíe al proceso de registro?",
+// Contextual FAQ responses based on current page
+const getContextualResponses = (pathname: string) => {
+  const isSearchPage = pathname.includes('/buscar');
+  const isConsultorioPage = pathname.includes('/consultorio/') && !pathname.includes('/dashboard');
+  const isAgendarPage = pathname.includes('/agendar');
+  const isPacientesLanding = pathname === '/pacientes';
+  const isConsultoriosLanding = pathname === '/para-consultorios';
+
+  const baseResponses: Record<string, { response: string; actions?: QuickAction[] }> = {
+    // Search related
+    buscar: {
+      response: "¡Puedo ayudarte a encontrar el consultorio ideal! 🔍\n\n• ¿Qué especialidad necesitas?\n• ¿En qué ciudad te encuentras?\n• ¿Tienes algún rango de precio preferido?",
       actions: [
-        { label: "Iniciar sesión", action: "login", icon: User },
-        { label: "Registrarme", action: "register", icon: ArrowRight }
-      ]
-    },
-    horario: {
-      response: "Nuestros horarios de atención son:\n\n🕐 **Lunes a Viernes:** 7:00 AM - 7:00 PM\n🕐 **Sábados:** 8:00 AM - 2:00 PM\n🕐 **Domingos:** Solo urgencias\n\nLas citas de telemedicina están disponibles 24/7.",
-      actions: [
-        { label: "Ver especialistas", action: "specialists", icon: Stethoscope },
-        { label: "Agendar cita", action: "appointment", icon: Calendar }
+        { label: "Buscar por especialidad", action: "search_specialty", icon: <Stethoscope className="w-3 h-3" /> },
+        { label: "Buscar cerca de mí", action: "search_nearby", icon: <MapPin className="w-3 h-3" /> }
       ]
     },
     especialidad: {
-      response: "Contamos con las siguientes especialidades:\n\n• Medicina General\n• Pediatría\n• Ginecología\n• Cardiología\n• Dermatología\n• Psicología\n• Nutrición\n• Odontología\n\n¿Qué especialidad te interesa?",
+      response: "Tenemos consultorios en múltiples especialidades:\n\n🦷 Odontología\n❤️ Cardiología\n👶 Pediatría\n🧠 Neurología\n👁️ Oftalmología\n🏥 Medicina General\n\n¿Cuál te interesa?"
+    },
+    // Appointment related
+    cita: {
+      response: "Para agendar una cita:\n\n1️⃣ Busca un consultorio por especialidad\n2️⃣ Revisa los servicios y precios\n3️⃣ Selecciona fecha y hora disponible\n4️⃣ Ingresa tus datos\n5️⃣ ¡Listo! Recibirás confirmación por email",
       actions: [
-        { label: "Medicina General", action: "general", icon: Heart },
-        { label: "Ver todas", action: "all_specialists", icon: Stethoscope }
+        { label: "Buscar consultorios", action: "go_search", icon: <Search className="w-3 h-3" /> },
+        { label: "Mis citas", action: "go_appointments", icon: <Calendar className="w-3 h-3" /> }
       ]
     },
+    agendar: {
+      response: "El proceso de agendamiento es muy sencillo:\n\n✅ Sin necesidad de registro previo\n✅ Confirmación instantánea\n✅ Recordatorios por email\n✅ Pago en el consultorio\n\n¿Te ayudo a buscar disponibilidad?"
+    },
+    // Pricing related  
     precio: {
-      response: "Nuestros planes de atención:\n\n💎 **Consulta General:** Desde $50.000 COP\n💎 **Especialidades:** Desde $80.000 COP\n💎 **Telemedicina:** Desde $35.000 COP\n\nAceptamos múltiples métodos de pago y convenios con EPS.",
+      response: "Los precios varían según el consultorio y servicio. Consulta general desde $40.000 COP. Cada consultorio publica sus tarifas de forma transparente en su perfil. 💰"
+    },
+    pago: {
+      response: "El pago se realiza directamente en el consultorio. Algunos aceptan:\n\n💳 Tarjetas de crédito/débito\n💵 Efectivo\n🏥 Seguros médicos\n\nConsulta los métodos aceptados en cada perfil."
+    },
+    // Consultorio registration
+    registrar: {
+      response: "¿Eres profesional de la salud? 🏥\n\nRegistra tu consultorio en Kenkō:\n• Recibe citas 24/7\n• Gestiona tu agenda online\n• Aumenta tu visibilidad\n• Plan básico gratis",
       actions: [
-        { label: "Contactar ventas", action: "contact", icon: MessageCircle }
+        { label: "Registrar consultorio", action: "go_register_consultorio" }
       ]
     },
-    historia: {
-      response: "Tu **historia clínica digital** está siempre disponible:\n\n📋 Accede desde cualquier dispositivo\n🔒 100% segura y encriptada\n📄 Descarga en PDF cuando lo necesites\n\nInicia sesión para acceder a tu historial médico.",
+    consultorio: {
+      response: "Los consultorios en Kenkō ofrecen:\n\n✅ Perfiles verificados\n✅ Precios transparentes\n✅ Reseñas de pacientes\n✅ Disponibilidad en tiempo real\n\n¿Quieres buscar uno específico?"
+    },
+    // Account related
+    cuenta: {
+      response: "Con una cuenta en Kenkō puedes:\n\n👤 Guardar tu historial de citas\n🔔 Recibir recordatorios\n⭐ Dejar reseñas\n📋 Acceder a tu historial médico\n\n¿Quieres crear una cuenta?",
       actions: [
-        { label: "Iniciar sesión", action: "login", icon: User }
+        { label: "Crear cuenta", action: "go_register" },
+        { label: "Iniciar sesión", action: "go_login" }
       ]
     },
-    telemedicina: {
-      response: "Nuestra plataforma de **Telemedicina** te permite:\n\n📹 Consultas por videollamada HD\n💬 Chat en tiempo real con tu médico\n📝 Recetas digitales válidas\n🕐 Disponible 24/7\n\n¿Te gustaría agendar una consulta virtual?",
-      actions: [
-        { label: "Agendar teleconsulta", action: "telemedicine", icon: Calendar }
-      ]
+    // General
+    hola: {
+      response: "¡Hola! 👋 Soy el asistente virtual de Kenkō.\n\nPuedo ayudarte a:\n• Buscar consultorios y médicos\n• Agendar citas\n• Resolver dudas sobre servicios\n\n¿En qué puedo ayudarte hoy?"
     },
-    urgencia: {
-      response: "⚠️ **En caso de emergencia:**\n\n🚨 Llama al **123** (Línea de emergencias)\n🏥 Acude al hospital más cercano\n📞 Nuestra línea de urgencias: **01 800 123 4567**\n\nPara situaciones no urgentes, agenda una cita regular.",
-      actions: [
-        { label: "Contacto urgente", action: "urgent_contact", icon: Clock }
-      ]
+    ayuda: {
+      response: "Estoy aquí para ayudarte. Puedes preguntarme sobre:\n\n🔍 Búsqueda de consultorios\n📅 Agendamiento de citas\n💰 Precios y pagos\n👤 Tu cuenta\n🏥 Registro de consultorios\n\n¿Qué necesitas?"
     },
-    registro: {
-      response: "Registrarte en Kenkō es muy fácil:\n\n1. Haz clic en **'Registrarse'**\n2. Selecciona tu **tipo de cuenta** (Paciente, Médico, etc.)\n3. Completa tus **datos personales**\n4. ¡Listo! Ya puedes agendar citas\n\n¿Deseas registrarte ahora?",
-      actions: [
-        { label: "Registrarme ahora", action: "register", icon: ArrowRight }
-      ]
-    },
-    kenko: {
-      response: "**Kenkō** (健康) significa 'salud' en japonés 🌸\n\nSomos una plataforma integral de gestión médica que conecta pacientes con profesionales de la salud. Nuestra misión es hacer la atención médica más accesible y eficiente.\n\n✨ +500 profesionales\n✨ +50,000 pacientes atendidos\n✨ 99.9% de satisfacción",
-      actions: [
-        { label: "Conocer más", action: "about", icon: Heart }
-      ]
+    gracias: {
+      response: "¡Con gusto! 😊 Si tienes más preguntas, aquí estaré. ¡Que tengas excelente día!"
     }
-  },
-  default: {
-    response: "¡Hola! Soy el asistente virtual de **Kenkō** 🏥\n\nPuedo ayudarte con:\n\n• Información sobre citas y horarios\n• Especialidades médicas disponibles\n• Precios y planes de atención\n• Telemedicina y consultas virtuales\n• Tu historia clínica\n\n¿En qué puedo ayudarte hoy?",
-    actions: [
-      { label: "Agendar cita", action: "appointment", icon: Calendar },
-      { label: "Ver especialidades", action: "specialists", icon: Stethoscope },
-      { label: "Iniciar sesión", action: "login", icon: User }
-    ]
+  };
+
+  // Add context-specific responses
+  if (isSearchPage) {
+    baseResponses.default = {
+      response: "Veo que estás buscando consultorios. 🔍\n\nPuedes filtrar por:\n• Especialidad\n• Ciudad\n• Precio\n• Valoración\n\n¿Necesitas ayuda con la búsqueda?",
+      actions: [
+        { label: "Ver especialidades", action: "show_specialties" }
+      ]
+    };
+  } else if (isConsultorioPage) {
+    baseResponses.default = {
+      response: "Estás viendo el perfil de un consultorio. 🏥\n\nDesde aquí puedes:\n• Ver servicios y precios\n• Conocer a los profesionales\n• Revisar horarios\n• Leer reseñas\n• Agendar una cita\n\n¿Te ayudo con algo?"
+    };
+  } else if (isAgendarPage) {
+    baseResponses.default = {
+      response: "Estás en el proceso de agendamiento. 📅\n\nSi tienes dudas sobre:\n• Disponibilidad de horarios\n• Precios del servicio\n• Datos requeridos\n\n¡Pregúntame!"
+    };
+  } else if (isPacientesLanding) {
+    baseResponses.default = {
+      response: "¡Bienvenido a Kenkō! 🩺\n\nSoy tu asistente para encontrar atención médica de calidad. Puedo ayudarte a:\n\n• Buscar consultorios cerca de ti\n• Comparar precios y servicios\n• Agendar citas fácilmente\n\n¿Por dónde empezamos?",
+      actions: [
+        { label: "Buscar consultorios", action: "go_search", icon: <Search className="w-3 h-3" /> }
+      ]
+    };
+  } else if (isConsultoriosLanding) {
+    baseResponses.default = {
+      response: "¿Interesado en registrar tu consultorio? 🏥\n\nKenkō te ofrece:\n• Mayor visibilidad online\n• Agenda automatizada\n• Más pacientes\n• Herramientas de gestión\n\n¿Te cuento más?",
+      actions: [
+        { label: "Ver beneficios", action: "show_benefits" },
+        { label: "Registrar consultorio", action: "go_register_consultorio" }
+      ]
+    };
+  } else {
+    baseResponses.default = {
+      response: "¡Hola! Soy el asistente de Kenkō. 👋\n\nPuedo ayudarte con:\n• Buscar consultorios\n• Agendar citas\n• Resolver dudas\n\n¿Qué necesitas?"
+    };
   }
+
+  return baseResponses;
 };
 
-function findResponse(input: string): { response: string; actions?: QuickAction[] } {
-  const lowerInput = input.toLowerCase();
+const findResponse = (message: string, pathname: string): { response: string; actions?: QuickAction[] } => {
+  const responses = getContextualResponses(pathname);
+  const lowerMessage = message.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   
-  for (const [keyword, data] of Object.entries(medicalFAQ.keywords)) {
-    if (lowerInput.includes(keyword)) {
-      return data;
+  const keywords: Record<string, string[]> = {
+    hola: ["hola", "buenos dias", "buenas tardes", "buenas noches", "hey", "hi"],
+    buscar: ["buscar", "encontrar", "busco", "necesito", "donde hay", "cercano"],
+    especialidad: ["especialidad", "especialidades", "medico", "doctor", "doctora", "tipo"],
+    cita: ["cita", "citas", "agendar", "reservar", "turno", "turnos"],
+    agendar: ["agendar", "reservar", "programar", "sacar cita"],
+    precio: ["precio", "precios", "costo", "costos", "cuanto", "tarifa", "tarifas", "valor"],
+    pago: ["pago", "pagar", "pagos", "metodo", "tarjeta", "efectivo"],
+    registrar: ["registrar", "registro", "unirme", "inscribir", "soy medico", "soy doctor"],
+    consultorio: ["consultorio", "consultorios", "clinica", "clinicas", "centro"],
+    cuenta: ["cuenta", "usuario", "perfil", "registro", "registrarme", "login"],
+    ayuda: ["ayuda", "ayudar", "help", "no entiendo", "como funciona"],
+    gracias: ["gracias", "thank", "thanks", "genial", "perfecto", "excelente"]
+  };
+
+  for (const [key, words] of Object.entries(keywords)) {
+    if (words.some(word => lowerMessage.includes(word))) {
+      return responses[key] || responses.default;
     }
   }
-  
-  // Additional keyword matching
-  if (lowerInput.includes('doctor') || lowerInput.includes('médico') || lowerInput.includes('medico')) {
-    return medicalFAQ.keywords.especialidad;
-  }
-  if (lowerInput.includes('agendar') || lowerInput.includes('reservar') || lowerInput.includes('consulta')) {
-    return medicalFAQ.keywords.cita;
-  }
-  if (lowerInput.includes('precio') || lowerInput.includes('costo') || lowerInput.includes('valor') || lowerInput.includes('cuanto')) {
-    return medicalFAQ.keywords.precio;
-  }
-  if (lowerInput.includes('emergencia') || lowerInput.includes('urgente')) {
-    return medicalFAQ.keywords.urgencia;
-  }
-  if (lowerInput.includes('virtual') || lowerInput.includes('online') || lowerInput.includes('video')) {
-    return medicalFAQ.keywords.telemedicina;
-  }
-  if (lowerInput.includes('hola') || lowerInput.includes('ayuda') || lowerInput.includes('info')) {
-    return medicalFAQ.default;
-  }
-  
-  return {
-    response: "Gracias por tu mensaje. Para brindarte mejor atención, ¿podrías especificar si necesitas información sobre:\n\n• **Citas** - agendar, cancelar o modificar\n• **Especialidades** - médicos disponibles\n• **Telemedicina** - consultas virtuales\n• **Tu cuenta** - registro o acceso\n\n¿Cómo puedo ayudarte?",
-    actions: medicalFAQ.default.actions
-  };
-}
+
+  return responses.default;
+};
 
 export default function ChatbotFloating() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      // Initial greeting
-      setTimeout(() => {
-        const greeting = medicalFAQ.default;
-        setMessages([{
-          id: '1',
-          text: greeting.response,
-          isBot: true,
-          timestamp: new Date(),
-          actions: greeting.actions
-        }]);
-      }, 500);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
+  // Reset messages when page changes and add contextual welcome
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
-
-  const sendMessage = (text: string) => {
-    if (!text.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isBot: false,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsTyping(true);
-
-    // Simulate AI response delay
-    setTimeout(() => {
-      const response = findResponse(text);
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: response.response,
+    if (isOpen && messages.length === 0) {
+      const { response, actions } = getContextualResponses(location.pathname).default;
+      setMessages([{
+        id: 1,
+        text: response,
         isBot: true,
         timestamp: new Date(),
-        actions: response.actions
-      };
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
-    }, 1000 + Math.random() * 500);
-  };
-
-  const handleSend = () => {
-    sendMessage(inputValue);
-  };
+        actions
+      }]);
+    }
+  }, [isOpen, location.pathname]);
 
   const handleAction = (action: string) => {
     switch (action) {
-      case 'login':
-        window.location.href = '/login';
+      case "go_search":
+        navigate("/buscar");
+        setIsOpen(false);
         break;
-      case 'register':
-        window.location.href = '/registro';
+      case "go_register":
+        navigate("/registro");
+        setIsOpen(false);
         break;
-      case 'contact':
-        window.location.href = '/contacto';
+      case "go_login":
+        navigate("/login");
+        setIsOpen(false);
         break;
-      case 'appointment':
-      case 'telemedicine':
-        sendMessage('¿Cómo puedo agendar una cita?');
+      case "go_register_consultorio":
+        navigate("/registro/consultorio");
+        setIsOpen(false);
         break;
-      case 'specialists':
-      case 'all_specialists':
-      case 'general':
-        sendMessage('¿Qué especialidades tienen disponibles?');
+      case "go_appointments":
+        navigate("/paciente/citas");
+        setIsOpen(false);
         break;
-      case 'about':
-        sendMessage('Cuéntame más sobre Kenkō');
+      case "search_specialty":
+        navigate("/buscar");
+        setIsOpen(false);
+        break;
+      case "search_nearby":
+        navigate("/buscar?ciudad=Bogotá");
+        setIsOpen(false);
+        break;
+      case "show_specialties":
+        handleSend("especialidades");
+        break;
+      case "show_benefits":
+        handleSend("beneficios de registrar mi consultorio");
         break;
       default:
         break;
     }
   };
 
+  const handleSend = (text?: string) => {
+    const messageText = text || inputValue.trim();
+    if (!messageText) return;
+
+    const userMessage: Message = {
+      id: messages.length + 1,
+      text: messageText,
+      isBot: false,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue("");
+    setIsTyping(true);
+
+    // Simulate typing delay
+    setTimeout(() => {
+      const { response, actions } = findResponse(messageText, location.pathname);
+      const botMessage: Message = {
+        id: messages.length + 2,
+        text: response,
+        isBot: true,
+        timestamp: new Date(),
+        actions
+      };
+      setMessages(prev => [...prev, botMessage]);
+      setIsTyping(false);
+    }, 800 + Math.random() * 600);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
+  const quickActions: QuickAction[] = [
+    { label: "Buscar consultorios", action: "go_search", icon: <Search className="w-3 h-3" /> },
+    { label: "Agendar cita", action: "go_search", icon: <Calendar className="w-3 h-3" /> },
+    { label: "Ayuda", action: "show_help", icon: <HelpCircle className="w-3 h-3" /> }
+  ];
+
   return (
     <>
-      {/* Floating Button */}
-      <motion.div
-        className="fixed bottom-24 right-4 z-50"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1, type: "spring", stiffness: 200 }}
+      {/* Chat Button */}
+      <motion.button
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl flex items-center justify-center transition-shadow"
+        onClick={() => setIsOpen(!isOpen)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        aria-label={isOpen ? "Cerrar chat" : "Abrir chat de ayuda"}
       >
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
-          size="icon"
-          aria-label={isOpen ? "Cerrar asistente virtual" : "Abrir asistente virtual"}
-        >
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-              >
-                <X className="w-6 h-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="open"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-              >
-                <MessageCircle className="w-6 h-6" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Button>
-        
-        {/* Notification dot */}
-        {!isOpen && (
-          <motion.div
-            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        )}
-      </motion.div>
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+            >
+              <X className="w-6 h-6" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+            >
+              <MessageCircle className="w-6 h-6" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
 
       {/* Chat Window */}
       <AnimatePresence>
@@ -286,124 +312,145 @@ export default function ChatbotFloating() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-44 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)]"
+            className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-3rem)] bg-card rounded-2xl shadow-2xl border overflow-hidden"
           >
-            <Card className="shadow-2xl border-2 overflow-hidden">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <Bot className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Asistente Kenkō</h3>
-                    <p className="text-xs text-white/80">Siempre disponible para ayudarte</p>
-                  </div>
+            {/* Header */}
+            <div className="bg-primary text-primary-foreground p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                  <Bot className="w-6 h-6" />
                 </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Asistente Kenkō</h3>
+                  <p className="text-xs text-primary-foreground/70">
+                    {isTyping ? "Escribiendo..." : "En línea"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 hover:bg-primary-foreground/10 rounded-lg transition-colors"
+                  aria-label="Cerrar chat"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
+            </div>
 
-              {/* Messages */}
-              <ScrollArea className="h-80 p-4" ref={scrollRef}>
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
-                    >
-                      <div className={`max-w-[85%]`}>
-                        <div
-                          className={`rounded-2xl px-4 py-3 ${
-                            message.isBot
-                              ? 'bg-muted text-foreground rounded-tl-none'
-                              : 'bg-primary text-primary-foreground rounded-tr-none'
-                          }`}
-                        >
-                          <p className="text-sm whitespace-pre-line">{message.text}</p>
-                        </div>
-                        
-                        {/* Quick Actions */}
-                        {message.actions && message.actions.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {message.actions.map((action, idx) => (
-                              <Button
-                                key={idx}
-                                variant="outline"
-                                size="sm"
-                                className="text-xs gap-1 h-7"
-                                onClick={() => handleAction(action.action)}
-                              >
-                                {action.icon && <action.icon className="w-3 h-3" />}
-                                {action.label}
-                              </Button>
-                            ))}
-                          </div>
-                        )}
-                        
-                        <span className="text-[10px] text-muted-foreground mt-1 block">
-                          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+            {/* Messages */}
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-accent/20">
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex gap-2 ${message.isBot ? "" : "flex-row-reverse"}`}
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                    message.isBot ? "bg-primary/10" : "bg-secondary"
+                  }`}>
+                    {message.isBot ? (
+                      <Bot className="w-4 h-4 text-primary" />
+                    ) : (
+                      <User className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className={`max-w-[80%] ${message.isBot ? "" : "text-right"}`}>
+                    <div className={`rounded-2xl px-4 py-2 ${
+                      message.isBot 
+                        ? "bg-card border rounded-tl-sm" 
+                        : "bg-primary text-primary-foreground rounded-tr-sm"
+                    }`}>
+                      <p className="text-sm whitespace-pre-line">{message.text}</p>
+                    </div>
+                    
+                    {/* Quick Actions */}
+                    {message.actions && message.actions.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {message.actions.map((action, i) => (
+                          <Button
+                            key={i}
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => handleAction(action.action)}
+                          >
+                            {action.icon}
+                            {action.label}
+                          </Button>
+                        ))}
                       </div>
-                    </motion.div>
+                    )}
+                    
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+              
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-2"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="bg-card border rounded-2xl rounded-tl-sm px-4 py-3">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Quick Actions Bar */}
+            {messages.length <= 1 && (
+              <div className="px-4 py-2 border-t bg-accent/30">
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {quickActions.map((action, i) => (
+                    <Button
+                      key={i}
+                      variant="secondary"
+                      size="sm"
+                      className="h-7 text-xs gap-1 shrink-0"
+                      onClick={() => handleAction(action.action)}
+                    >
+                      {action.icon}
+                      {action.label}
+                    </Button>
                   ))}
-                  
-                  {/* Typing indicator */}
-                  {isTyping && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center gap-2 text-muted-foreground"
-                    >
-                      <div className="flex gap-1">
-                        <motion.div
-                          className="w-2 h-2 bg-primary rounded-full"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 0.5, repeat: Infinity, delay: 0 }}
-                        />
-                        <motion.div
-                          className="w-2 h-2 bg-primary rounded-full"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }}
-                        />
-                        <motion.div
-                          className="w-2 h-2 bg-primary rounded-full"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }}
-                        />
-                      </div>
-                      <span className="text-xs">Escribiendo...</span>
-                    </motion.div>
-                  )}
                 </div>
-              </ScrollArea>
-
-              {/* Input */}
-              <div className="p-4 border-t bg-card">
-                <div className="flex gap-2">
-                  <Input
-                    ref={inputRef}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Escribe tu mensaje..."
-                    className="flex-1"
-                    aria-label="Mensaje para el asistente"
-                  />
-                  <Button 
-                    onClick={handleSend} 
-                    size="icon"
-                    disabled={!inputValue.trim()}
-                    aria-label="Enviar mensaje"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </div>
-                <p className="text-[10px] text-muted-foreground text-center mt-2">
-                  Asistente virtual con IA • Respuestas automáticas
-                </p>
               </div>
-            </Card>
+            )}
+
+            {/* Input */}
+            <div className="p-4 border-t bg-card">
+              <div className="flex gap-2">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Escribe tu mensaje..."
+                  className="flex-1"
+                  aria-label="Escribe tu mensaje"
+                />
+                <Button
+                  onClick={() => handleSend()}
+                  disabled={!inputValue.trim() || isTyping}
+                  size="icon"
+                  aria-label="Enviar mensaje"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

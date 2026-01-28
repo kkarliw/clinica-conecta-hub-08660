@@ -1,28 +1,39 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Type, Contrast, X, Play, Pause, Square, Eye } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { useState, useEffect, useCallback } from "react";
+import {
+  Accessibility, Eye, Type, Volume2, Sun,
+  Play, Pause, Square, MousePointer, X
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export default function AccessibilityToolbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [fontSize, setFontSize] = useState(100);
   const [highContrast, setHighContrast] = useState(false);
-  const [hoverToRead, setHoverToRead] = useState(false);
   const [isReading, setIsReading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [speechRate, setSpeechRate] = useState([1]);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [hoverToRead, setHoverToRead] = useState(false);
+  const [simplifiedUI, setSimplifiedUI] = useState(false);
+  const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      setSpeechSynthesis(window.speechSynthesis);
+    }
+    
+    // Load saved preferences
     const savedFontSize = localStorage.getItem('a11y-font-size');
     const savedContrast = localStorage.getItem('a11y-high-contrast');
-    const savedHoverToRead = localStorage.getItem('a11y-hover-to-read');
-    const savedSpeechRate = localStorage.getItem('a11y-speech-rate');
     
     if (savedFontSize) {
       const size = parseInt(savedFontSize);
@@ -32,148 +43,113 @@ export default function AccessibilityToolbar() {
     
     if (savedContrast === 'true') {
       setHighContrast(true);
-      document.body.classList.add('high-contrast');
-    }
-    
-    if (savedHoverToRead === 'true') {
-      setHoverToRead(true);
-    }
-
-    if (savedSpeechRate) {
-      setSpeechRate([parseFloat(savedSpeechRate)]);
+      document.documentElement.classList.add('high-contrast');
     }
   }, []);
 
+  // Apply font size
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSize}%`;
+    localStorage.setItem('a11y-font-size', fontSize.toString());
+    return () => {
+      document.documentElement.style.fontSize = '100%';
+    };
+  }, [fontSize]);
+
+  // Apply high contrast
+  useEffect(() => {
+    if (highContrast) {
+      document.documentElement.classList.add('high-contrast');
+    } else {
+      document.documentElement.classList.remove('high-contrast');
+    }
+    localStorage.setItem('a11y-high-contrast', highContrast.toString());
+    return () => {
+      document.documentElement.classList.remove('high-contrast');
+    };
+  }, [highContrast]);
+
+  // Apply simplified UI
+  useEffect(() => {
+    if (simplifiedUI) {
+      document.documentElement.classList.add('simplified-ui');
+    } else {
+      document.documentElement.classList.remove('simplified-ui');
+    }
+    return () => {
+      document.documentElement.classList.remove('simplified-ui');
+    };
+  }, [simplifiedUI]);
+
   // Hover to read functionality
-  const handleMouseOver = useCallback((e: MouseEvent) => {
-    if (!hoverToRead) return;
-    
-    const target = e.target as HTMLElement;
-    const text = target.textContent?.trim();
-    
-    if (text && text.length > 0 && text.length < 500) {
-      // Clear any existing timeout
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
+  useEffect(() => {
+    if (!hoverToRead || !speechSynthesis) return;
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const text = target.textContent?.trim();
       
-      // Add visual indicator
-      target.style.outline = '2px solid hsl(238 41% 41%)';
-      target.style.outlineOffset = '2px';
-      
-      // Delay before reading to prevent rapid fire
-      hoverTimeoutRef.current = setTimeout(() => {
-        if ('speechSynthesis' in window) {
+      if (text && text.length > 0 && text.length < 500) {
+        // Only read interactive elements and content
+        const isReadable = target.matches('p, h1, h2, h3, h4, h5, h6, span, a, button, label, li, td, th, [role="button"]');
+        if (isReadable) {
+          // Add visual indicator
+          target.style.outline = '2px solid hsl(238 41% 41%)';
+          target.style.outlineOffset = '2px';
+          
           speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = 'es-ES';
-          utterance.rate = speechRate[0];
+          utterance.rate = 0.9;
           speechSynthesis.speak(utterance);
         }
-      }, 300);
-    }
-  }, [hoverToRead, speechRate]);
+      }
+    };
 
-  const handleMouseOut = useCallback((e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    target.style.outline = '';
-    target.style.outlineOffset = '';
-    
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    
-    if (hoverToRead && 'speechSynthesis' in window) {
+    const handleMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      target.style.outline = '';
+      target.style.outlineOffset = '';
       speechSynthesis.cancel();
-    }
-  }, [hoverToRead]);
+    };
 
-  useEffect(() => {
-    if (hoverToRead) {
-      document.addEventListener('mouseover', handleMouseOver);
-      document.addEventListener('mouseout', handleMouseOut);
-    } else {
-      document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseout', handleMouseOut);
-    }
-    
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+
     return () => {
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
-    };
-  }, [hoverToRead, handleMouseOver, handleMouseOut]);
-
-  const adjustFontSize = (delta: number) => {
-    const newSize = Math.max(80, Math.min(150, fontSize + delta));
-    setFontSize(newSize);
-    document.documentElement.style.fontSize = `${newSize}%`;
-    localStorage.setItem('a11y-font-size', newSize.toString());
-    
-    toast({
-      title: 'Tamaño de fuente ajustado',
-      description: `${newSize}% del tamaño normal`,
-    });
-  };
-
-  const toggleHighContrast = () => {
-    const newValue = !highContrast;
-    setHighContrast(newValue);
-    
-    if (newValue) {
-      document.body.classList.add('high-contrast');
-    } else {
-      document.body.classList.remove('high-contrast');
-    }
-    
-    localStorage.setItem('a11y-high-contrast', newValue.toString());
-    
-    toast({
-      title: newValue ? 'Alto contraste activado' : 'Alto contraste desactivado',
-    });
-  };
-
-  const toggleHoverToRead = () => {
-    const newValue = !hoverToRead;
-    setHoverToRead(newValue);
-    localStorage.setItem('a11y-hover-to-read', newValue.toString());
-    
-    if (!newValue && 'speechSynthesis' in window) {
       speechSynthesis.cancel();
-    }
-    
-    toast({
-      title: newValue ? 'Lectura al pasar el mouse activada' : 'Lectura al pasar el mouse desactivada',
-      description: newValue ? 'Pasa el mouse sobre cualquier texto para escucharlo' : '',
-    });
-  };
+    };
+  }, [hoverToRead, speechSynthesis]);
 
-  const startReading = () => {
-    if (!('speechSynthesis' in window)) {
-      toast({
-        title: 'No disponible',
-        description: 'Tu navegador no soporta text-to-speech',
-        variant: 'destructive',
-      });
+  const startReading = useCallback(() => {
+    if (!speechSynthesis) {
+      toast.error("Tu navegador no soporta lectura en voz alta");
       return;
     }
 
-    const mainContent = document.querySelector('main')?.textContent || '';
+    // Get main content
+    const mainContent = document.querySelector('main') || document.body;
+    const textElements = mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, td, th');
     
-    if (!mainContent.trim()) {
-      toast({
-        title: 'Sin contenido',
-        description: 'No hay contenido para leer en esta página',
-        variant: 'destructive',
-      });
+    let fullText = '';
+    textElements.forEach(el => {
+      const text = el.textContent?.trim();
+      if (text) fullText += text + '. ';
+    });
+
+    if (!fullText.trim()) {
+      toast.info("No hay contenido para leer en esta página");
       return;
     }
 
     speechSynthesis.cancel();
     
-    const utterance = new SpeechSynthesisUtterance(mainContent);
+    const utterance = new SpeechSynthesisUtterance(fullText);
     utterance.lang = 'es-ES';
-    utterance.rate = speechRate[0];
-    utteranceRef.current = utterance;
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
     
     utterance.onstart = () => {
       setIsReading(true);
@@ -189,197 +165,213 @@ export default function AccessibilityToolbar() {
       setIsReading(false);
       setIsPaused(false);
     };
-    
-    speechSynthesis.speak(utterance);
-    
-    toast({
-      title: 'Lectura iniciada',
-      description: 'Leyendo el contenido de la página',
-    });
-  };
 
-  const pauseReading = () => {
-    if ('speechSynthesis' in window) {
+    speechSynthesis.speak(utterance);
+    toast.success("Iniciando lectura de la página");
+  }, [speechSynthesis]);
+
+  const pauseReading = useCallback(() => {
+    if (speechSynthesis) {
       if (isPaused) {
         speechSynthesis.resume();
         setIsPaused(false);
-        toast({ title: 'Lectura reanudada' });
+        toast.info("Reanudando lectura");
       } else {
         speechSynthesis.pause();
         setIsPaused(true);
-        toast({ title: 'Lectura pausada' });
+        toast.info("Lectura pausada");
       }
     }
-  };
+  }, [speechSynthesis, isPaused]);
 
-  const stopReading = () => {
-    if ('speechSynthesis' in window) {
+  const stopReading = useCallback(() => {
+    if (speechSynthesis) {
       speechSynthesis.cancel();
       setIsReading(false);
       setIsPaused(false);
-      toast({ title: 'Lectura detenida' });
+      toast.info("Lectura detenida");
     }
+  }, [speechSynthesis]);
+
+  const resetSettings = () => {
+    setFontSize(100);
+    setHighContrast(false);
+    setHoverToRead(false);
+    setSimplifiedUI(false);
+    stopReading();
+    toast.success("Configuración restablecida");
   };
 
-  const handleSpeechRateChange = (value: number[]) => {
-    setSpeechRate(value);
-    localStorage.setItem('a11y-speech-rate', value[0].toString());
-  };
+  const activeFeatures = [highContrast, hoverToRead, simplifiedUI, fontSize !== 100].filter(Boolean).length;
 
   return (
-    <>
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        variant="outline"
-        size="icon"
-        className="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full shadow-lg bg-card border-2 hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-        aria-label="Abrir herramientas de accesibilidad"
-      >
-        <Type className="w-5 h-5" />
-      </Button>
-
-      {isOpen && (
-        <Card className="fixed bottom-20 right-4 z-50 p-5 w-80 shadow-2xl border-2 animate-in slide-in-from-bottom-5">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Type className="w-4 h-4 text-primary" />
+    <div className="fixed top-20 right-4 z-40">
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 rounded-full shadow-lg bg-card border-2 hover:bg-accent relative"
+            aria-label="Abrir opciones de accesibilidad"
+          >
+            <Accessibility className="w-5 h-5" />
+            {activeFeatures > 0 && (
+              <Badge 
+                className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]"
+              >
+                {activeFeatures}
+              </Badge>
+            )}
+          </Button>
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          align="end" 
+          className="w-80 p-0"
+          sideOffset={8}
+        >
+          <div className="p-4 border-b bg-accent/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Accessibility className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold">Accesibilidad</h3>
               </div>
-              <h3 className="font-semibold text-foreground">Accesibilidad</h3>
+              <Button variant="ghost" size="sm" onClick={resetSettings} className="text-xs h-7">
+                Restablecer
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-              aria-label="Cerrar"
-              className="h-8 w-8"
-            >
-              <X className="w-4 h-4" />
-            </Button>
           </div>
 
-          <div className="space-y-5">
+          <div className="p-4 space-y-5 max-h-[400px] overflow-y-auto">
             {/* Font Size */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center justify-between">
-                <span>Tamaño de fuente</span>
-                <span className="text-muted-foreground">{fontSize}%</span>
-              </label>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => adjustFontSize(-10)}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 font-bold"
-                  aria-label="Reducir tamaño de fuente"
-                >
-                  A-
-                </Button>
-                <Button
-                  onClick={() => setFontSize(100)}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
-                  aria-label="Restablecer tamaño"
-                >
-                  Reset
-                </Button>
-                <Button
-                  onClick={() => adjustFontSize(10)}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 font-bold"
-                  aria-label="Aumentar tamaño de fuente"
-                >
-                  A+
-                </Button>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2">
+                  <Type className="w-4 h-4" />
+                  Tamaño de texto
+                </Label>
+                <span className="text-sm text-muted-foreground">{fontSize}%</span>
+              </div>
+              <Slider
+                value={[fontSize]}
+                onValueChange={([value]) => setFontSize(value)}
+                min={75}
+                max={150}
+                step={5}
+                className="w-full"
+                aria-label="Ajustar tamaño de texto"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Pequeño</span>
+                <span>Grande</span>
               </div>
             </div>
+
+            <Separator />
 
             {/* High Contrast */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="high-contrast" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <Contrast className="w-4 h-4 text-primary" />
-                Alto Contraste
+              <Label htmlFor="high-contrast" className="flex items-center gap-2 cursor-pointer">
+                <Eye className="w-4 h-4" />
+                <div>
+                  <p>Alto contraste</p>
+                  <p className="text-xs text-muted-foreground font-normal">Mayor visibilidad</p>
+                </div>
               </Label>
               <Switch
                 id="high-contrast"
                 checked={highContrast}
-                onCheckedChange={toggleHighContrast}
+                onCheckedChange={setHighContrast}
+                aria-label="Activar alto contraste"
               />
             </div>
 
-            {/* Hover to Read */}
+            {/* Simplified UI */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="hover-read" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <Eye className="w-4 h-4 text-primary" />
-                Leer al pasar mouse
+              <Label htmlFor="simplified-ui" className="flex items-center gap-2 cursor-pointer">
+                <Sun className="w-4 h-4" />
+                <div>
+                  <p>Interfaz simplificada</p>
+                  <p className="text-xs text-muted-foreground font-normal">Diseño más limpio</p>
+                </div>
               </Label>
               <Switch
-                id="hover-read"
-                checked={hoverToRead}
-                onCheckedChange={toggleHoverToRead}
+                id="simplified-ui"
+                checked={simplifiedUI}
+                onCheckedChange={setSimplifiedUI}
+                aria-label="Activar interfaz simplificada"
               />
             </div>
 
-            {/* Speech Rate */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center justify-between">
-                <span>Velocidad de lectura</span>
-                <span className="text-muted-foreground">{speechRate[0]}x</span>
-              </label>
-              <Slider
-                value={speechRate}
-                onValueChange={handleSpeechRateChange}
-                min={0.5}
-                max={2}
-                step={0.1}
-                className="w-full"
-              />
-            </div>
+            <Separator />
 
-            {/* Read Page Controls */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground block">
-                Leer página completa
-              </label>
+            {/* Text to Speech - Page Reading */}
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <Volume2 className="w-4 h-4" />
+                Leer página en voz alta
+              </Label>
               <div className="flex gap-2">
                 {!isReading ? (
                   <Button
-                    onClick={startReading}
-                    variant="default"
+                    variant="outline"
                     size="sm"
                     className="flex-1 gap-2"
+                    onClick={startReading}
+                    aria-label="Iniciar lectura"
                   >
                     <Play className="w-4 h-4" />
-                    Iniciar
+                    Reproducir
                   </Button>
                 ) : (
                   <>
                     <Button
-                      onClick={pauseReading}
                       variant="outline"
                       size="sm"
                       className="flex-1 gap-2"
+                      onClick={pauseReading}
+                      aria-label={isPaused ? "Reanudar lectura" : "Pausar lectura"}
                     >
                       {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                      {isPaused ? 'Reanudar' : 'Pausar'}
+                      {isPaused ? "Reanudar" : "Pausar"}
                     </Button>
                     <Button
-                      onClick={stopReading}
-                      variant="destructive"
+                      variant="outline"
                       size="sm"
                       className="gap-2"
+                      onClick={stopReading}
+                      aria-label="Detener lectura"
                     >
                       <Square className="w-4 h-4" />
-                      Detener
                     </Button>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Status indicator */}
+            {/* Hover to Read */}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="hover-read" className="flex items-center gap-2 cursor-pointer">
+                <MousePointer className="w-4 h-4" />
+                <div>
+                  <p>Leer al pasar el mouse</p>
+                  <p className="text-xs text-muted-foreground font-normal">Lee el texto al hover</p>
+                </div>
+              </Label>
+              <Switch
+                id="hover-read"
+                checked={hoverToRead}
+                onCheckedChange={(checked) => {
+                  setHoverToRead(checked);
+                  if (checked) {
+                    toast.info("Pasa el mouse sobre el texto para escucharlo");
+                  }
+                }}
+                aria-label="Activar lectura al pasar el mouse"
+              />
+            </div>
+
+            {/* Reading Status */}
             {isReading && (
               <div className="flex items-center gap-2 text-sm text-primary animate-pulse">
                 <Volume2 className="w-4 h-4" />
@@ -388,13 +380,13 @@ export default function AccessibilityToolbar() {
             )}
           </div>
 
-          <div className="mt-5 pt-4 border-t text-center">
+          <div className="p-3 border-t bg-accent/20 text-center">
             <p className="text-xs text-muted-foreground">
-              Herramientas de accesibilidad WCAG 2.1
+              WCAG 2.1 AA Compliant
             </p>
           </div>
-        </Card>
-      )}
-    </>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }

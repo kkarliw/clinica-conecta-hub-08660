@@ -192,6 +192,26 @@
     --border: 0 0% 80%;
     --input: 0 0% 80%;
   }
+
+  /* Simplified UI Mode */
+  .simplified-ui {
+    --radius: 0.5rem;
+  }
+
+  .simplified-ui * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .simplified-ui .shadow-lg,
+  .simplified-ui .shadow-xl,
+  .simplified-ui .shadow-2xl {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .simplified-ui [class*="gradient"] {
+    background: hsl(var(--primary)) !important;
+  }
 }
 
 /* Estilos específicos Kenkō */
