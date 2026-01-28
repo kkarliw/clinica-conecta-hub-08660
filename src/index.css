@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   KENKŌ DESIGN SYSTEM
+   El camino a tu salud
+   ======================================== */
+
+@layer base {
+  :root {
+    /* Kenkō Brand Colors */
+    --background: 240 14% 97%;           /* #F7F7F9 - Blanco suave */
+    --foreground: 0 0% 12%;              /* #1E1E1E - Gris oscuro texto */
+
+    --card: 0 0% 100%;                   /* #FFFFFF - Blanco puro */
+    --card-foreground: 0 0% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+
+    /* Azul Kenkō Principal */
+    --primary: 238 41% 41%;              /* #3E4194 */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 237 49% 58%;        /* #5A5FCF - Hover/Focus */
+    --primary-dark: 238 45% 35%;
+
+    /* Gris secundario */
+    --secondary: 240 11% 87%;            /* #D9D9E3 */
+    --secondary-foreground: 0 0% 12%;
+
+    /* Colores de estado */
+    --success: 145 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 12%;
+
+    --muted: 240 10% 94%;
+    --muted-foreground: 240 5% 46%;
+
+    --accent: 238 30% 95%;
+    --accent-foreground: 238 41% 41%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 11% 87%;
+    --input: 240 11% 87%;
+    --ring: 238 41% 41%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar Kenkō */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 12%;
+    --sidebar-primary: 238 41% 41%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 238 30% 95%;
+    --sidebar-accent-foreground: 238 41% 41%;
+    --sidebar-border: 240 11% 87%;
+    --sidebar-ring: 238 41% 41%;
+
+    /* Gradientes Kenkō */
+    --gradient-primary: linear-gradient(135deg, hsl(238, 41%, 41%), hsl(237, 49%, 58%));
+    --gradient-hero: linear-gradient(180deg, hsl(238, 30%, 95%), hsl(240, 14%, 97%));
+    
+    /* Sombras */
+    --shadow-card: 0 2px 12px rgba(62, 65, 148, 0.06);
+    --shadow-hover: 0 8px 24px rgba(62, 65, 148, 0.12);
+    --shadow-lg: 0 20px 40px rgba(62, 65, 148, 0.15);
+  }
+
+  .dark {
+    --background: 240 20% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 240 20% 13%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 20% 13%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Azul Kenkō en Dark */
+    --primary: 237 60% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 237 55% 75%;
+    --primary-dark: 238 50% 50%;
+
+    --secondary: 240 15% 25%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 240 15% 20%;
+    --muted-foreground: 240 10% 60%;
+
+    --accent: 238 40% 20%;
+    --accent-foreground: 237 60% 75%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 15% 25%;
+    --input: 240 15% 25%;
+    --ring: 237 60% 65%;
+
+    --sidebar-background: 240 20% 13%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 237 60% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 238 40% 20%;
+    --sidebar-accent-foreground: 237 60% 75%;
+    --sidebar-border: 240 15% 25%;
+    --sidebar-ring: 237 60% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-feature-settings: 'kern' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Animaciones Kenkō */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  /* Alto contraste */
+  .high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 95%;
+    --card-foreground: 0 0% 0%;
+    --primary: 238 50% 30%;
+    --primary-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+  }
+
+  .high-contrast.dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
+    --primary: 237 60% 70%;
+    --primary-foreground: 0 0% 0%;
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+  }
+}
+
+/* Estilos específicos Kenkō */
+@layer components {
+  .kenko-gradient-text {
+    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
+  }
+
+  .kenko-card {
+    @apply bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .kenko-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors;
+  }
+}
